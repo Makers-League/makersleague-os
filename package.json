@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "pnpm db:start && turbo run dev",
     "build": "turbo run build",
-    "check": "oxfmt && turbo run lint:oxlint typecheck test build",
+    "check": "oxfmt && turbo run lint:oxlint typecheck test",
     "lint": "turbo run lint:oxlint --output-logs=errors-only",
     "lint:oxlint": "oxlint",
     "typecheck": "turbo run typecheck",

@@ -6,11 +6,14 @@
    never optional; there are no warnings.
 
    ```sh
-   pnpm check   # format, then lint, typecheck, unit tests and build in parallel
+   pnpm check   # format, then lint, typecheck and unit tests in parallel
    pnpm test:db
    pnpm --filter @ml/easyverein test:integration
    pnpm test:e2e
    ```
+
+   `pnpm check` does not build; CI does. Run `pnpm build` too when you change
+   `next.config.ts`, dependencies, or what runs on the server versus in the browser.
 
 2. Before you push, use the app like a member would to verify your change: start it
    (`pnpm dev`), log in through `/login` with a seed member (code from Mailpit at
