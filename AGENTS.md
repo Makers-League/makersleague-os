@@ -14,7 +14,8 @@ pnpm --filter @ml/easyverein test:integration
 pnpm test:e2e
 ```
 
-In a cloud container, start Docker first with `dockerd &`.
+In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` and
+`pnpm env:local` (writes `.env.local` from the running stack).
 
 ## Rules
 
@@ -34,3 +35,23 @@ In a cloud container, start Docker first with `dockerd &`.
 - UI text is German.
 - TypeScript is version 7 (`tsc` is the Go-based compiler). Lint with oxlint, format with
   oxfmt; there is no ESLint or Prettier.
+
+## Lessons learned
+
+- `supabase start` on an existing Docker volume does not re-run migrations. After editing a
+  migration, run `pnpm db:reset` (and `pnpm db:types`).
+- GitHub push protection rejects any `sb_secret_...` key, even the local CLI default. Never
+  commit keys: `.env.example` stays empty and `pnpm env:local` fills `.env.local`.
+- Keep `enable_confirmations = true` in `supabase/config.toml` and "Confirm email" on in the
+  cloud. Without it anyone can sign up with a member's address and a password, and the
+  allow-list hook lets it through because it only checks the address.
+- The allow-list hook runs only when a login is created. Former members are kept out by the
+  sync (`public.sync_member_logins` bans and signs them out). Ban with a finite date such as
+  `9999-12-31`: GoTrue cannot read `infinity`.
+- Supabase limits how often one address can request a code. E2E tests that are not about
+  login use `signedIn()` from `apps/web/e2e/helpers.ts`, which reuses the session.
+- Next.js' own route announcer also has `role="alert"`. Find form errors in tests with
+  `getByTestId("form-error")`.
+- `next dev` writes `apps/web/AGENTS.md` (Next.js agent rules). Keep it committed.
+- The cloud Supabase project is in eu-west-1 (Ireland); put Netlify functions in the same
+  region.
