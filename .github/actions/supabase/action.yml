@@ -1,0 +1,9 @@
+name: Local Supabase
+description: Starts the local stack (all migrations + seed from scratch) and writes .env.local
+runs:
+  using: composite
+  steps:
+    - run: pnpm exec supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,storage-api,supavisor
+      shell: bash
+    - run: pnpm env:local
+      shell: bash

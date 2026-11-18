@@ -139,8 +139,9 @@ pnpm dev          # app (and Supabase, if it is not running yet)
 
 ## CI and deploys
 
-- `ci.yml` on every PR: format, lint, typecheck, unit tests, build; then a local Supabase from
-  scratch, type drift check, pgTAP, sync integration and Playwright e2e.
+- `ci.yml` on every PR and push to `main`, one parallel job per check: format, lint,
+  typecheck, unit tests, build, migrations + RLS tests (type drift check, pgTAP), sync
+  integration tests and Playwright e2e. The last three each start a local Supabase.
 - `deploy-db.yml` on merge to `main`: `supabase db push --remote` to the cloud project. It
   skips itself until the three Supabase secrets are set.
 - Netlify builds deploy previews per PR and production from `main`.

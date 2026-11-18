@@ -9,22 +9,42 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Every check is its own job, so they run in parallel and each shows up on its own.
 jobs:
-  checks:
-    name: Format, lint, typecheck, unit tests, build
+  format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - uses: ./.github/actions/setup
       - run: pnpm format:check
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
       - run: pnpm lint --deny-warnings
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
       - run: pnpm typecheck
+
+  unit:
+    name: unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
       - run: pnpm test
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
       # The build only needs well-formed values; nothing is called at build time.
       - run: pnpm build
         env:
@@ -32,44 +52,41 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder
 
   database:
-    name: Migrations, RLS tests, sync and e2e
+    name: migrations + RLS tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-
-      - name: Start local Supabase (applies all migrations + seed from scratch)
-        run: pnpm exec supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,storage-api,supavisor
-
-      - name: Write .env.local from the local stack
-        run: pnpm env:local
-
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/supabase
       - name: Generated types match the migrations
         run: |
           pnpm db:types
           git diff --exit-code packages/db/src/database.types.ts
-
       # The stack was just built from scratch, so no reset is needed here.
       - name: RLS tests (pgTAP)
         run: pnpm exec supabase test db
 
-      - name: Sync integration tests
-        run: pnpm --filter @ml/easyverein test:integration
+  sync:
+    name: sync integration tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/supabase
+      - run: pnpm --filter @ml/easyverein test:integration
 
+  e2e:
+    name: e2e tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ./.github/actions/setup
+      - uses: ./.github/actions/supabase
       - name: Install Playwright browser
         run: pnpm --filter @ml/web exec playwright install --with-deps chromium
-
-      - name: Build app for e2e
+      - name: Build app
         run: pnpm turbo run build --filter=@ml/web
-
-      - name: End-to-end tests
-        run: pnpm test:e2e
-
+      - run: pnpm test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
