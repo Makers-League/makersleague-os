@@ -1,0 +1,39 @@
+{
+  "name": "makersleague-os",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm db:start && turbo run dev",
+    "build": "turbo run build",
+    "lint": "oxlint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:db": "supabase db reset && supabase test db",
+    "test:e2e": "pnpm --filter @ml/web test:e2e",
+    "format": "oxfmt",
+    "format:check": "oxfmt --check",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:migrate:new": "supabase migration new",
+    "db:types": "supabase gen types typescript --schema public > packages/db/src/database.types.ts && oxfmt packages/db/src/database.types.ts",
+    "sync": "pnpm --filter @ml/easyverein sync",
+    "env:local": "bash scripts/local-env.sh"
+  },
+  "devDependencies": {
+    "oxfmt": "0.79.0",
+    "oxlint": "1.94.0",
+    "supabase": "3.2.0",
+    "turbo": "2.11.12"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.28.0",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "supabase",
+      "sharp",
+      "esbuild"
+    ]
+  }
+}

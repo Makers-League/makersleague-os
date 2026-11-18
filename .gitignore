@@ -1,0 +1,14 @@
+node_modules/
+.turbo/
+.next/
+.netlify/
+next-env.d.ts
+*.tsbuildinfo
+.env*.local
+.env
+coverage/
+playwright-report/
+test-results/
+supabase/.temp/
+supabase/.branches/
+.DS_Store

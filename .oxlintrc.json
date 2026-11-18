@@ -1,0 +1,40 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "react", "jsx-a11y", "nextjs", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2024": true
+  },
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/.netlify/**",
+    "**/next-env.d.ts",
+    "**/database.types.ts",
+    "**/playwright-report/**",
+    "**/test-results/**"
+  ],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
+    "import/no-unassigned-import": "off",
+    "typescript/no-explicit-any": "error",
+    "no-underscore-dangle": [
+      "warn",
+      {
+        "allow": ["_isApplication"]
+      }
+    ]
+  },
+  "settings": {
+    "next": {
+      "rootDir": "apps/web"
+    }
+  }
+}

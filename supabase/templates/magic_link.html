@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="de">
+  <body style="font-family: system-ui, sans-serif; color: #111; line-height: 1.5">
+    <h1 style="font-size: 20px">Dein Login für Makers League OS</h1>
+    <p>Gib diesen Code auf der Login-Seite ein:</p>
+    <p
+      style="font-size: 32px; font-weight: 700; letter-spacing: 6px; margin: 16px 0"
+      data-testid="otp-code"
+    >
+      {{ .Token }}
+    </p>
+    <p>
+      Oder melde dich direkt mit diesem Link an:<br />
+      <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email"
+        >Jetzt anmelden</a
+      >
+    </p>
+    <p style="color: #666; font-size: 13px">
+      Der Code ist eine Stunde gültig. Wenn du keinen Login angefordert hast, kannst du diese
+      E-Mail ignorieren.
+    </p>
+  </body>
+</html>

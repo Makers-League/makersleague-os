@@ -1,0 +1,12 @@
+# Netlify site settings for the app. In the Netlify UI set the package directory
+# to apps/web and leave the base directory empty (monorepo setup).
+# Functions region is set in the UI (Project configuration > Functions > Region):
+# pick the region next to the Supabase project (eu-west-1, Ireland).
+
+[build]
+command = "pnpm turbo run build --filter=@ml/web"
+publish = ".next"
+
+[functions]
+directory = "netlify/functions"
+node_bundler = "esbuild"

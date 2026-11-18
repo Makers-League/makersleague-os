@@ -1,0 +1,90 @@
+[
+  {
+    "id": 1001,
+    "joinDate": "2021-03-01T00:00:00+01:00",
+    "resignationDate": null,
+    "_isApplication": false,
+    "emailOrUserName": "ada@example.com",
+    "contactDetails": { "firstName": "Ada", "familyName": "Admin" }
+  },
+  {
+    "id": 1002,
+    "joinDate": "2021-03-01T00:00:00+01:00",
+    "resignationDate": null,
+    "_isApplication": false,
+    "emailOrUserName": "bert@example.com",
+    "contactDetails": { "firstName": "Bert", "familyName": "Vorstand" }
+  },
+  {
+    "id": 1003,
+    "joinDate": "2022-05-15T00:00:00+02:00",
+    "resignationDate": null,
+    "_isApplication": false,
+    "emailOrUserName": "clara@example.com",
+    "contactDetails": { "firstName": "Clara", "familyName": "Lötkolben" }
+  },
+  {
+    "id": 1004,
+    "joinDate": "2023-01-10T00:00:00+01:00",
+    "resignationDate": null,
+    "_isApplication": false,
+    "emailOrUserName": "david@example.com",
+    "contactDetails": { "firstName": "David", "familyName": "Drucker" }
+  },
+  {
+    "id": 1005,
+    "joinDate": "2023-09-01T00:00:00+02:00",
+    "resignationDate": null,
+    "_isApplication": false,
+    "emailOrUserName": "emma@example.com",
+    "contactDetails": { "firstName": "Emma", "familyName": "Fräse" }
+  },
+  {
+    "id": 1006,
+    "joinDate": "2021-03-01T00:00:00+01:00",
+    "resignationDate": "2025-12-31T00:00:00+01:00",
+    "_isApplication": false,
+    "emailOrUserName": "felix@example.com",
+    "contactDetails": { "firstName": "Felix", "familyName": "Ehemalig" }
+  },
+  {
+    "id": 1007,
+    "joinDate": null,
+    "resignationDate": null,
+    "_isApplication": true,
+    "emailOrUserName": "greta@example.com",
+    "contactDetails": { "firstName": "Greta", "familyName": "Antrag" }
+  },
+  {
+    "id": 1009,
+    "joinDate": "2022-07-01T00:00:00+02:00",
+    "resignationDate": "2099-06-30T00:00:00+02:00",
+    "_isApplication": false,
+    "emailOrUserName": "ida@example.com",
+    "contactDetails": { "firstName": "Ida", "familyName": "Kündigt" }
+  },
+  {
+    "id": 1010,
+    "joinDate": "2024-04-01T00:00:00+02:00",
+    "resignationDate": null,
+    "_isApplication": false,
+    "emailOrUserName": "jonas@example.com",
+    "contactDetails": { "firstName": "Jonas", "familyName": "Laser" }
+  },
+  {
+    "id": 1011,
+    "joinDate": "2026-11-01T00:00:00+01:00",
+    "resignationDate": null,
+    "_isApplication": false,
+    "emailOrUserName": "Kim@Example.com",
+    "contactDetails": { "firstName": "Kim", "familyName": "Neu" }
+  },
+  {
+    "id": 1012,
+    "joinDate": "2026-11-01T00:00:00+01:00",
+    "resignationDate": null,
+    "_isApplication": false,
+    "emailOrUserName": "nur-ein-username",
+    "contactDetails": { "firstName": "Ohne", "familyName": "Mail" }
+  }
+]

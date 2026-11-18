@@ -1,0 +1,27 @@
+{
+  "name": "@ml/easyverein",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --project unit",
+    "test:integration": "node --env-file-if-exists=../../.env.local ./node_modules/vitest/vitest.mjs run --project integration",
+    "sync": "tsx --env-file-if-exists=../../.env.local src/cli.ts"
+  },
+  "dependencies": {
+    "@ml/db": "workspace:*",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@ml/config": "workspace:*",
+    "@supabase/supabase-js": "2.119.0",
+    "@types/node": "22.20.5",
+    "tsx": "4.23.15",
+    "typescript": "7.0.2",
+    "vitest": "5.1.1"
+  }
+}
