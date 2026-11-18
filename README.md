@@ -69,7 +69,7 @@ pnpm dev          # app (and Supabase, if it is not running yet)
 | `pnpm db:types`                                 | regenerate `packages/db/src/database.types.ts`                    |
 | `pnpm sync`                                     | run the easyVerein sync against local Supabase (fixtures)         |
 | `pnpm lint` / `pnpm format`                     | oxlint incl. type errors (tsrs) / oxfmt                           |
-| `pnpm typecheck`                                | `tsc` from TypeScript 7 in every package                          |
+| `pnpm typecheck`                                | `tsrs --noEmit` (Rust port of TypeScript 7) in every package      |
 | `pnpm test`                                     | unit tests (Vitest)                                               |
 | `pnpm test:db`                                  | pgTAP tests for row level security                                |
 | `pnpm --filter @ml/easyverein test:integration` | sync against local Supabase                                       |

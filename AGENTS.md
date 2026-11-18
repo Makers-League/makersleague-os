@@ -57,10 +57,11 @@ In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` 
   refresh-token endpoint: it rotates the website's production token.
 - No real member data in code, fixtures, seeds or tests. Use `@example.com` addresses.
 - UI text is German.
-- TypeScript is version 7 (`tsc` is the Go-based compiler). Lint with oxlint (type-aware
-  through tsrs, the Rust port of TypeScript, which also reports type errors in every package in
-  one pass; plus the vendored anti-slop plugin in `tools/oxlint/anti-slop`), format with oxfmt;
-  there is no ESLint or Prettier. `pnpm typecheck` still runs the official `tsc`.
+- TypeScript 7. Type checking runs on tsrs, the Rust port of the TypeScript 7 compiler
+  (`pnpm typecheck` is `tsrs --noEmit` per package; `next build` still uses the `typescript`
+  package). Lint with oxlint (type-aware through tsrs, which also reports type errors in every
+  package in one pass; plus the vendored anti-slop plugin in `tools/oxlint/anti-slop`), format
+  with oxfmt; there is no ESLint or Prettier.
 - Avoid `as`: parse unknown data with zod. Where an assertion is really needed, put a
   `// SAFETY:` comment above it saying why it holds. Never `as unknown as T`.
 - Disable a lint rule only on one line, with the reason:
