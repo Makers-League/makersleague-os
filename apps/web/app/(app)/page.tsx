@@ -16,7 +16,7 @@ export default async function DashboardPage() {
       <section>
         <h1 className="text-2xl font-semibold">Hallo {member.first_name}!</h1>
         <p className="text-muted-foreground">
-          Willkommen bei {member.clubs?.name}. Hier entstehen bald die ersten Funktionen.
+          Willkommen bei {member.clubs.name}. Hier entstehen bald die ersten Funktionen.
         </p>
       </section>
       <section className="space-y-3">

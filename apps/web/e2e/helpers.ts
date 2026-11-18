@@ -1,14 +1,15 @@
 import { createAdminClient } from "@ml/db";
 import { expect, type Page } from "@playwright/test";
+import { z } from "zod";
 
 const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:54324";
 
-type MailpitSummary = { ID: string; To: { Address: string }[] };
+const searchResult = z.object({ messages: z.array(z.object({ ID: z.string() })).nullable() });
+const message = z.object({ Text: z.string(), HTML: z.string() });
 
-const messagesFor = async (email: string): Promise<MailpitSummary[]> => {
+const messagesFor = async (email: string) => {
   const res = await fetch(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`);
-  const body = (await res.json()) as { messages: MailpitSummary[] | null };
-  return body.messages ?? [];
+  return searchResult.parse(await res.json()).messages ?? [];
 };
 
 export const clearMailbox = async () => {
@@ -22,7 +23,7 @@ export const readLoginEmail = async (email: string) => {
     .poll(async () => (id = (await messagesFor(email))[0]?.ID), { timeout: 15_000 })
     .toBeTruthy();
   const res = await fetch(`${MAILPIT}/api/v1/message/${id}`);
-  return (await res.json()) as { Text: string; HTML: string };
+  return message.parse(await res.json());
 };
 
 export const readLoginCode = async (email: string): Promise<string> => {

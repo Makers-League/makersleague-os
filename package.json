@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "pnpm db:start && turbo run dev",
     "build": "turbo run build",
-    "lint": "oxlint",
+    "lint": "pnpm --filter @ml/web exec next typegen >/dev/null && oxlint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "test:db": "supabase db reset && supabase test db",
@@ -20,8 +20,10 @@
     "env:local": "bash scripts/local-env.sh"
   },
   "devDependencies": {
+    "@oxlint/plugins": "1.94.0",
     "oxfmt": "0.79.0",
     "oxlint": "1.94.0",
+    "oxlint-tsgolint": "7.0.2007",
     "supabase": "3.2.0",
     "turbo": "2.11.12"
   },

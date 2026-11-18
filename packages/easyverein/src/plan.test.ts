@@ -48,9 +48,12 @@ describe("planSync", () => {
 
   it("updates changed fields", () => {
     const plan = planSync([existing(1)], [source(1, { lastName: "Neu" })]);
-    expect(plan.updates).toEqual([
-      { id: "row-1", values: expect.objectContaining({ last_name: "Neu" }), restored: false },
-    ]);
+    expect(plan.updates).toHaveLength(1);
+    expect(plan.updates[0]).toMatchObject({
+      id: "row-1",
+      values: { last_name: "Neu" },
+      restored: false,
+    });
   });
 
   it("copies a new exit date from easyVerein", () => {
@@ -83,7 +86,8 @@ describe("planSync", () => {
 
   it("restores a member that reappears", () => {
     const plan = planSync([existing(1, { deleted_at: "2026-11-01" })], [source(1)]);
-    expect(plan.updates).toEqual([{ id: "row-1", values: expect.any(Object), restored: true }]);
+    expect(plan.updates).toHaveLength(1);
+    expect(plan.updates[0]).toMatchObject({ id: "row-1", restored: true });
   });
 
   it("stops when more than 10% would be marked deleted", () => {

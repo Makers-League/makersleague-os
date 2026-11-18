@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { codeSchema, emailSchema } from "@/lib/validation";
 
+const text = (value: FormDataEntryValue | null) => (typeof value === "string" ? value : "");
+
 export type LoginState =
   | { step: "email"; error?: string; email?: string }
   | { step: "code"; email: string; error?: string };
@@ -15,7 +17,7 @@ export type LoginState =
  * not reveal who is a member.
  */
 export async function requestCode(_prev: LoginState, formData: FormData): Promise<LoginState> {
-  const rawEmail = String(formData.get("email") ?? "");
+  const rawEmail = text(formData.get("email"));
   const parsed = emailSchema.safeParse({ email: rawEmail });
   if (!parsed.success) {
     return { step: "email", error: parsed.error.issues[0]?.message, email: rawEmail };
@@ -46,7 +48,7 @@ export async function requestCode(_prev: LoginState, formData: FormData): Promis
 
 /** Step 2: check the 6-digit code and start the session. */
 export async function verifyCode(_prev: LoginState, formData: FormData): Promise<LoginState> {
-  const email = String(formData.get("email") ?? "");
+  const email = text(formData.get("email"));
   const parsed = codeSchema.safeParse({ email, code: formData.get("code") });
   if (!parsed.success) {
     return { step: "code", email, error: parsed.error.issues[0]?.message };
@@ -62,5 +64,5 @@ export async function verifyCode(_prev: LoginState, formData: FormData): Promise
     return { step: "code", email, error: "Der Code ist falsch oder abgelaufen." };
   }
 
-  redirect("/");
+  return redirect("/");
 }

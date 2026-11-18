@@ -6,6 +6,7 @@ import { join } from "node:path";
 import { createAdminClient } from "@ml/db";
 import { createClient } from "@supabase/supabase-js";
 import { beforeEach, describe, expect, it } from "vitest";
+import { z } from "zod";
 
 import { defaultFixturesPath, fixturesSource } from "./fixtures";
 import { runSync } from "./sync";
@@ -70,7 +71,9 @@ describe("runSync against local Supabase", () => {
   it("marks a removed member as deleted and signs them out", async () => {
     const dir = await mkdtemp(join(tmpdir(), "ml-fixtures-"));
     const path = join(dir, "members.json");
-    const all = JSON.parse(await readFile(defaultFixturesPath, "utf8")) as { id: number }[];
+    const all = z
+      .array(z.looseObject({ id: z.number() }))
+      .parse(JSON.parse(await readFile(defaultFixturesPath, "utf8")));
     await writeFile(path, JSON.stringify(all.filter((m) => m.id !== 1005)));
 
     // Emma has a login with an open session.

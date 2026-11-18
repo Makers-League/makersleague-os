@@ -1,15 +1,22 @@
 # Agent guidelines for Makers League OS
 
-## Before you push
+## When you are done
 
-Run what CI runs (local Supabase must be up: `pnpm db:start`):
+1. Run the checks and fix everything they report before you say you are done. Lint errors are
+   never optional; there are no warnings.
 
-```sh
-pnpm format:check && pnpm lint --deny-warnings && pnpm typecheck && pnpm test && pnpm build
-pnpm test:db
-pnpm --filter @ml/easyverein test:integration
-pnpm test:e2e
-```
+   ```sh
+   pnpm format && pnpm lint && pnpm typecheck && pnpm test && pnpm build
+   pnpm test:db
+   pnpm --filter @ml/easyverein test:integration
+   pnpm test:e2e
+   ```
+
+2. Before you push, use the app like a member would to verify your change: start it
+   (`pnpm dev`), log in through `/login` with a seed member (code from Mailpit at
+   http://127.0.0.1:54324), click through the flows you touched in a real browser (Playwright
+   is installed), and also try a role that should not have access. Add or update a Playwright
+   test in `apps/web/e2e` for every user-facing change.
 
 In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` and
 `pnpm env:local` (writes `.env.local` from the running stack).
@@ -45,8 +52,13 @@ In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` 
   refresh-token endpoint: it rotates the website's production token.
 - No real member data in code, fixtures, seeds or tests. Use `@example.com` addresses.
 - UI text is German.
-- TypeScript is version 7 (`tsc` is the Go-based compiler). Lint with oxlint, format with
-  oxfmt; there is no ESLint or Prettier.
+- TypeScript is version 7 (`tsc` is the Go-based compiler). Lint with oxlint (type-aware, plus
+  the vendored anti-slop plugin in `tools/oxlint/anti-slop`), format with oxfmt; there is no
+  ESLint or Prettier.
+- Avoid `as`: parse unknown data with zod. Where an assertion is really needed, put a
+  `// SAFETY:` comment above it saying why it holds. Never `as unknown as T`.
+- Disable a lint rule only on one line, with the reason:
+  `// oxlint-disable-next-line <rule> -- <reason>`.
 - `next dev` writes `apps/web/AGENTS.md` (Next.js agent rules). Keep it committed.
 - E2E tests that are not about login use `signedIn()` from `apps/web/e2e/helpers.ts`:
   Supabase limits how often one address can request a code.

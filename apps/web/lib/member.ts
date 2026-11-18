@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/server";
 export const getCurrentMember = cache(async () => {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
-  const userId = data?.claims?.sub;
+  const userId = data?.claims.sub;
   if (!userId) redirect("/login");
 
   const { data: member, error } = await supabase
@@ -26,5 +26,5 @@ export const getCurrentMember = cache(async () => {
     .maybeSingle();
   if (error) throw error;
 
-  return { supabase, email: data.claims.email as string | undefined, member };
+  return { supabase, email: data.claims.email, member };
 });

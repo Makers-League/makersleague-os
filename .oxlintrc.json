@@ -3,7 +3,8 @@
   "plugins": ["typescript", "unicorn", "oxc", "import", "react", "jsx-a11y", "nextjs", "vitest"],
   "categories": {
     "correctness": "error",
-    "suspicious": "warn"
+    "suspicious": "error",
+    "perf": "error"
   },
   "env": {
     "browser": true,
@@ -17,24 +18,64 @@
     "**/next-env.d.ts",
     "**/database.types.ts",
     "**/playwright-report/**",
-    "**/test-results/**"
+    "**/test-results/**",
+    "tools/oxlint/anti-slop/**"
   ],
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn",
+    "react-hooks/exhaustive-deps": "error",
     "import/no-unassigned-import": "off",
     "typescript/no-explicit-any": "error",
     "no-underscore-dangle": [
-      "warn",
+      "error",
       {
         "allow": ["_isApplication"]
       }
-    ]
+    ],
+    "typescript/no-floating-promises": "error",
+    "typescript/no-misused-promises": "error",
+    "typescript/await-thenable": "error",
+    "typescript/no-unsafe-type-assertion": "error",
+    "typescript/no-unnecessary-type-assertion": "error",
+    "typescript/switch-exhaustiveness-check": "error",
+    "typescript/restrict-template-expressions": "error",
+    "typescript/no-base-to-string": "error",
+    "typescript/no-unsafe-argument": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error",
+    "typescript/require-await": "error",
+    "typescript/return-await": "error",
+    "typescript/no-unnecessary-condition": "error",
+    "typescript/prefer-nullish-coalescing": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-non-null-assertion": "error",
+    "anti-slop/no-chained-type-assertions": "error",
+    "anti-slop/no-widen-then-assert": "error",
+    "anti-slop/require-safety-comment-for-type-assertion": "error",
+    "anti-slop/no-unknown-returns": "error",
+    "anti-slop/no-unknown-parameters": "error",
+    "anti-slop/no-unknown-type-aliases": "error",
+    "anti-slop/no-unsafe-dictionary-type": "error",
+    "anti-slop/no-conditional-empty-object-spread": "error",
+    "anti-slop/no-reduce-accumulator-copy": "error",
+    "oxc/no-accumulating-spread": "error",
+    "oxc/no-map-spread": "off"
   },
   "settings": {
     "next": {
       "rootDir": "apps/web"
     }
-  }
+  },
+  "options": {
+    "typeAware": true
+  },
+  "jsPlugins": [
+    {
+      "name": "anti-slop",
+      "specifier": "./tools/oxlint/anti-slop/index.ts"
+    }
+  ]
 }

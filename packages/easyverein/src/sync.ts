@@ -35,6 +35,7 @@ const PAGE_SIZE = 1000; // PostgREST max_rows
 const loadMembers = async (client: AdminClient, clubId: string) => {
   const rows: ExistingMember[] = [];
   for (let from = 0; ; from += PAGE_SIZE) {
+    // oxlint-disable-next-line no-await-in-loop -- each page starts where the last one ended
     const { data } = await client
       .from("members")
       .select(EXISTING_MEMBER_COLUMNS)

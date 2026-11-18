@@ -46,7 +46,16 @@ export const toValues = (m: SourceMember) => ({
   left_on: m.leftOn,
 });
 
-const fields = Object.keys(toValues({} as SourceMember)) as (keyof MemberValues)[];
+const fields = [
+  "easyverein_id",
+  "email",
+  "first_name",
+  "last_name",
+  "status",
+  "membership_type",
+  "joined_on",
+  "left_on",
+] as const satisfies readonly (keyof MemberValues)[];
 
 /**
  * Decide what one sync run changes. Pure, so every rule is unit-tested:
