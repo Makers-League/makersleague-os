@@ -25,7 +25,7 @@ const clubId = "00000000-0000-4000-8000-000000000001";
 const now = () => new Date("2026-11-18T12:00:00Z");
 
 const resetDb = () =>
-  execSync("pnpm exec supabase db reset", {
+  execSync("bash scripts/db-reseed.sh", {
     cwd: join(__dirname, "../../.."),
     stdio: "ignore",
   });

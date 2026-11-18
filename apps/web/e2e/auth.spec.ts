@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
 
-import { admin, clearMailbox, expectNoMail, login, readLoginEmail, requestCode } from "./helpers";
+import { admin, expectNoMail, login, readLoginEmail, requestCode } from "./helpers";
 
-test.beforeEach(clearMailbox);
+// Tests run in parallel: each one uses its own seed member, so their codes and data never mix.
 
 test("visitors without a session are sent to the login page", async ({ page }) => {
   await page.goto("/profil");
@@ -10,8 +10,8 @@ test("visitors without a session are sent to the login page", async ({ page }) =
 });
 
 test("an active member logs in with the emailed code", async ({ page }) => {
-  await login(page, "clara@example.com");
-  await expect(page.getByRole("heading", { name: "Hallo Clara!" })).toBeVisible();
+  await login(page, "david@example.com");
+  await expect(page.getByRole("heading", { name: "Hallo David!" })).toBeVisible();
   await expect(page.getByTestId("member-list")).toContainText("Ada Admin");
 });
 
@@ -25,7 +25,7 @@ test("the link in the email logs in too", async ({ page }) => {
 });
 
 test("a wrong code is rejected", async ({ page }) => {
-  await requestCode(page, "bert@example.com");
+  await requestCode(page, "ada@example.com");
   await page.getByLabel("Code").fill("000000");
   await page.getByRole("button", { name: "Anmelden" }).click();
   await expect(page.getByTestId("form-error")).toHaveText("Der Code ist falsch oder abgelaufen.");

@@ -6,7 +6,7 @@
    never optional; there are no warnings.
 
    ```sh
-   pnpm format && pnpm lint && pnpm typecheck && pnpm test && pnpm build
+   pnpm check   # format, then lint, typecheck, unit tests and build in parallel
    pnpm test:db
    pnpm --filter @ml/easyverein test:integration
    pnpm test:e2e
@@ -18,6 +18,10 @@
    is installed), and also try a role that should not have access. Add or update a Playwright
    test in `apps/web/e2e` for every user-facing change.
 
+3. Keep this loop fast; it runs after every change. All of the above takes about 20 seconds.
+   When you add a check, test or service, measure it, and fix whatever makes the loop slower
+   (parallelize, cache, reseed instead of reset, no fixed waits in tests).
+
 In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` and
 `pnpm env:local` (writes `.env.local` from the running stack).
 
@@ -26,7 +30,8 @@ In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` 
 - Schema changes only as new files in `supabase/migrations` (`pnpm db:migrate:new <name>`).
   Never edit a merged migration. Run `pnpm db:reset && pnpm db:types` and commit the types.
 - `supabase start` does not re-run migrations on an existing volume: after any migration
-  change, run `pnpm db:reset`.
+  change, run `pnpm db:reset`. Tests call `scripts/db-reseed.sh`, which empties the tables and
+  runs `seed.sql` again in 0.2s, and only does the full reset when the migrations changed.
 - Every table: `club_id` (directly or via `members`), RLS on, policies through
   `private.my_role()`, pgTAP tests per role in `supabase/tests/database`.
 - Supabase CLI 3 targets the local database by default; cloud commands need `--remote`.
@@ -60,5 +65,6 @@ In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` 
 - Disable a lint rule only on one line, with the reason:
   `// oxlint-disable-next-line <rule> -- <reason>`.
 - `next dev` writes `apps/web/AGENTS.md` (Next.js agent rules). Keep it committed.
-- E2E tests that are not about login use `signedIn()` from `apps/web/e2e/helpers.ts`:
-  Supabase limits how often one address can request a code.
+- E2E tests run in parallel. Each test uses its own seed member (codes and data must not mix),
+  and tests that are not about login use `signedIn()` from `apps/web/e2e/helpers.ts`, which
+  logs in without an email.

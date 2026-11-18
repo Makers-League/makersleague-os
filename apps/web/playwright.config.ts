@@ -7,8 +7,8 @@ const ci = Boolean(process.env.CI);
 export default defineConfig({
   testDir: "./e2e",
   globalSetup: "./e2e/global-setup.ts",
-  fullyParallel: false,
-  workers: 1,
+  // Each test uses its own seed member (see e2e/auth.spec.ts), so they can run in parallel.
+  fullyParallel: true,
   forbidOnly: ci,
   retries: ci ? 1 : 0,
   reporter: ci ? [["github"], ["html", { open: "never" }]] : "list",

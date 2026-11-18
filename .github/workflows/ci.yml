@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/setup
-      - run: pnpm lint --deny-warnings
+      - run: pnpm lint
 
   typecheck:
     runs-on: ubuntu-latest

@@ -1,8 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { clearMailbox, signedIn } from "./helpers";
-
-test.beforeEach(clearMailbox);
+import { signedIn } from "./helpers";
 
 test("a member edits their own profile", async ({ page }) => {
   await signedIn(page, "clara@example.com");

@@ -3,7 +3,7 @@ description: Starts the local stack (all migrations + seed from scratch) and wri
 runs:
   using: composite
   steps:
-    - run: pnpm exec supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,storage-api,supavisor
+    - run: pnpm db:start
       shell: bash
     - run: pnpm env:local
       shell: bash

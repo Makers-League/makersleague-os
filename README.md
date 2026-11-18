@@ -46,7 +46,7 @@ Needs Node.js 22+, pnpm 10 and Docker (or OrbStack).
 
 ```sh
 pnpm install
-pnpm db:start     # local Supabase in Docker (first run downloads images)
+pnpm db:start     # local Supabase in Docker, only the services we use (first run downloads images)
 pnpm env:local    # writes .env.local files with the local stack's keys
 pnpm dev          # app (and Supabase, if it is not running yet)
 ```
@@ -54,23 +54,26 @@ pnpm dev          # app (and Supabase, if it is not running yet)
 - App: http://localhost:3000. Log in as any active seed member, e.g. `clara@example.com`
   (member), `bert@example.com` (board) or `ada@example.com` (admin).
 - Login emails: Mailpit at http://127.0.0.1:54324.
-- Supabase Studio: http://127.0.0.1:54323.
+- Supabase Studio is not started by `db:start`; use `pnpm exec supabase start` for the full
+  stack including Studio (http://127.0.0.1:54323).
 
 ## Commands
 
-| Command                                         | What it does                                              |
-| ----------------------------------------------- | --------------------------------------------------------- |
-| `pnpm dev`                                      | local Supabase + Next.js dev server                       |
-| `pnpm db:migrate:new <name>`                    | new timestamped file in `supabase/migrations`             |
-| `pnpm db:reset`                                 | rebuild the local DB from all migrations + `seed.sql`     |
-| `pnpm db:types`                                 | regenerate `packages/db/src/database.types.ts`            |
-| `pnpm sync`                                     | run the easyVerein sync against local Supabase (fixtures) |
-| `pnpm lint` / `pnpm format`                     | oxlint / oxfmt                                            |
-| `pnpm typecheck`                                | `tsc` from TypeScript 7 in every package                  |
-| `pnpm test`                                     | unit tests (Vitest)                                       |
-| `pnpm test:db`                                  | pgTAP tests for row level security                        |
-| `pnpm --filter @ml/easyverein test:integration` | sync against local Supabase                               |
-| `pnpm test:e2e`                                 | Playwright against local Supabase + app                   |
+| Command                                         | What it does                                                      |
+| ----------------------------------------------- | ----------------------------------------------------------------- |
+| `pnpm dev`                                      | local Supabase + Next.js dev server                               |
+| `pnpm check`                                    | format, then lint, typecheck, unit tests and build in parallel    |
+| `pnpm db:migrate:new <name>`                    | new timestamped file in `supabase/migrations`                     |
+| `pnpm db:reset`                                 | rebuild the local DB from all migrations + `seed.sql` (12s)       |
+| `pnpm db:reseed`                                | back to `seed.sql` in 0.2s; full reset only if migrations changed |
+| `pnpm db:types`                                 | regenerate `packages/db/src/database.types.ts`                    |
+| `pnpm sync`                                     | run the easyVerein sync against local Supabase (fixtures)         |
+| `pnpm lint` / `pnpm format`                     | oxlint / oxfmt                                                    |
+| `pnpm typecheck`                                | `tsc` from TypeScript 7 in every package                          |
+| `pnpm test`                                     | unit tests (Vitest)                                               |
+| `pnpm test:db`                                  | pgTAP tests for row level security                                |
+| `pnpm --filter @ml/easyverein test:integration` | sync against local Supabase                                       |
+| `pnpm test:e2e`                                 | Playwright against local Supabase + app, in parallel              |
 
 ## Database rules
 
