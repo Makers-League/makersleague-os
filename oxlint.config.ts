@@ -96,6 +96,9 @@ export default defineConfig({
     ...cloudflare.rules,
     ...on("nextjs", nextjs),
     ...on("jsx-a11y", a11y),
+    // The preset allows mixed arrays of promises and values in Promise.all; bun lint's rule has no
+    // options, so it reports those too (stricter).
+    "@typescript-eslint/await-thenable": "error",
     "typescript/no-base-to-string": "error",
     "typescript/no-unnecessary-condition": "error",
     "typescript/prefer-nullish-coalescing": "error",

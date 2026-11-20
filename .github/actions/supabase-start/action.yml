@@ -1,0 +1,36 @@
+name: Start Supabase in the background
+description: >
+  Installs the Supabase CLI binary (same version as package.json) and starts the local stack in
+  the background, so it overlaps with dependency install and other setup. The Docker images come
+  from the Actions cache when they can (pulls from the registries vary between 20 and 50s).
+  Pair with ./.github/actions/supabase-wait.
+runs:
+  using: composite
+  steps:
+    - id: version
+      shell: bash
+      run: |
+        echo "supabase=$(jq -r .devDependencies.supabase package.json)" >> "$GITHUB_OUTPUT"
+    - uses: supabase/setup-cli@v1
+      with:
+        version: ${{ steps.version.outputs.supabase }}
+    - uses: actions/cache/restore@v4
+      id: images
+      with:
+        path: ~/supabase-images.tar.zst
+        key: supabase-images-${{ steps.version.outputs.supabase }}-${{ hashFiles('supabase/config.toml', 'scripts/db-start.sh') }}
+    - shell: bash
+      run: |
+        echo "SUPABASE_IMAGES_HIT=${{ steps.images.outputs.cache-hit }}" >> "$GITHUB_ENV"
+        echo "SUPABASE_IMAGES_KEY=${{ steps.images.outputs.cache-primary-key }}" >> "$GITHUB_ENV"
+        # set +e: the step's -e would end the subshell on a failure before it writes the exit code.
+        (
+          set +e
+          start=$(date +%s)
+          if [ -f ~/supabase-images.tar.zst ]; then zstd -dc ~/supabase-images.tar.zst | docker load -q; fi
+          echo "images ready after $(( $(date +%s) - start ))s"
+          bash scripts/db-start.sh
+          code=$?
+          echo "supabase ready after $(( $(date +%s) - start ))s"
+          echo $code > "$RUNNER_TEMP/supabase.exit"
+        ) > "$RUNNER_TEMP/supabase.log" 2>&1 &

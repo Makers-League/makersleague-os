@@ -1,0 +1,18 @@
+name: Save Supabase images
+description: >
+  On a cache miss, saves the stack's Docker images for later runs (one job does this). Only when
+  the stack started, so a half-pulled set never lands under the cache key.
+runs:
+  using: composite
+  steps:
+    - id: started
+      shell: bash
+      run: echo "ok=$([ "$(cat "$RUNNER_TEMP/supabase.exit" 2>/dev/null)" = 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+    - if: env.SUPABASE_IMAGES_HIT != 'true' && steps.started.outputs.ok == 'true'
+      shell: bash
+      run: docker save $(docker images --format '{{.Repository}}:{{.Tag}}' | grep supabase/) | zstd -T0 -3 -q -o ~/supabase-images.tar.zst
+    - if: env.SUPABASE_IMAGES_HIT != 'true' && steps.started.outputs.ok == 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ~/supabase-images.tar.zst
+        key: ${{ env.SUPABASE_IMAGES_KEY }}

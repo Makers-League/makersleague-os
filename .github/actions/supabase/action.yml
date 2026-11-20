@@ -1,9 +1,0 @@
-name: Local Supabase
-description: Starts the local stack (all migrations + seed from scratch) and writes .env.local
-runs:
-  using: composite
-  steps:
-    - run: pnpm db:start
-      shell: bash
-    - run: pnpm env:local
-      shell: bash

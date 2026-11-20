@@ -6,17 +6,17 @@
    never optional; there are no warnings.
 
    ```sh
-   pnpm check   # format, then lint, typecheck and unit tests in parallel
-   pnpm test:db
-   pnpm --filter @ml/easyverein test:integration
-   pnpm test:e2e
+   bun run check   # format, then lint, typecheck and unit tests in parallel
+   bun run test:db
+   bun run test:integration
+   bun run test:e2e
    ```
 
-   `pnpm check` does not build; CI does. Run `pnpm build` too when you change
+   `bun run check` does not build; CI does. Run `bun run build` too when you change
    `next.config.ts`, dependencies, or what runs on the server versus in the browser.
 
 2. Before you push, use the app like a member would to verify your change: start it
-   (`pnpm dev`), log in through `/login` with a seed member (code from Mailpit at
+   (`bun run dev`), log in through `/login` with a seed member (code from Mailpit at
    http://127.0.0.1:54324), click through the flows you touched in a real browser (Playwright
    is installed), and also try a role that should not have access. Add or update a Playwright
    test in `apps/web/e2e` for every user-facing change.
@@ -25,15 +25,15 @@
    When you add a check, test or service, measure it, and fix whatever makes the loop slower
    (parallelize, cache, reseed instead of reset, no fixed waits in tests).
 
-In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` and
-`pnpm env:local` (writes `.env.local` from the running stack).
+In a cloud container, start Docker first with `dockerd &`, then `bun run db:start` and
+`bun run env:local` (writes `.env.local` from the running stack).
 
 ## Database
 
-- Schema changes only as new files in `supabase/migrations` (`pnpm db:migrate:new <name>`).
-  Never edit a merged migration. Run `pnpm db:reset && pnpm db:types` and commit the types.
+- Schema changes only as new files in `supabase/migrations` (`bun run db:migrate:new <name>`).
+  Never edit a merged migration. Run `bun run db:reset && bun run db:types` and commit the types.
 - `supabase start` does not re-run migrations on an existing volume: after any migration
-  change, run `pnpm db:reset`. Tests call `scripts/db-reseed.sh`, which empties the tables and
+  change, run `bun run db:reset`. Tests call `scripts/db-reseed.sh`, which empties the tables and
   runs `seed.sql` again in 0.2s, and only does the full reset when the migrations changed.
 - Every table: `club_id` (directly or via `members`), RLS on, policies through
   `private.my_role()`, pgTAP tests per role in `supabase/tests/database`.
@@ -46,7 +46,7 @@ In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` 
   (`lib/supabase/server.ts`). Never import `createAdminClient` in `apps/web/app`.
 - On the server use `supabase.auth.getClaims()`, never `getSession()`.
 - Never commit keys, not even the local CLI defaults: GitHub push protection rejects any
-  `sb_secret_...`. `.env.example` stays empty; `pnpm env:local` fills `.env.local`.
+  `sb_secret_...`. `.env.example` stays empty; `bun run env:local` fills `.env.local`.
 - Keep email confirmation on (`enable_confirmations = true`, "Confirm email" in the cloud).
   Without it anyone can sign up with a member's address and a password.
 - The allow-list hook only runs when a login is created. Former members are kept out by
@@ -60,12 +60,17 @@ In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` 
   refresh-token endpoint: it rotates the website's production token.
 - No real member data in code, fixtures, seeds or tests. Use `@example.com` addresses.
 - UI text is German.
-- TypeScript 7. Type checking runs on tsrs, the Rust port of the TypeScript 7 compiler
-  (`pnpm typecheck` is `tsrs --noEmit` per package; `next build` still uses the `typescript`
-  package). Lint with oxlint (type-aware through tsrs, which also reports type errors in every
-  package in one pass) using Cloudflare's preset `@cloudflare/oxlint-config` plus the project
-  additions in `oxlint.config.ts`; format with oxfmt. There is no ESLint or Prettier (the preset
-  pulls in ESLint plugin packages, which oxlint loads itself).
+- TypeScript 7. Bun runs type checking (`bun check` per package,
+  same errors as tsc 7), formatting (`bun fmt`, reads `.oxfmtrc.json`) and unit tests
+  (`bun test`; tests still import from `vitest`, Bun provides that API). `next build` still
+  uses the `typescript` package. Lint with `bun lint --type-aware` (also reports type errors in
+  every package in one pass), which reads `oxlint.config.ts`: Cloudflare's preset
+  `@cloudflare/oxlint-config` plus the project additions. `bun lint` only exists in Bun canary,
+  so the `bun` devDependency pins an exact canary. `bun run` puts it first on PATH, so every
+  package script (fmt, check, test, lint) runs that canary; `.bun-version` is only the
+  installer and runtime for `bun install` and `bun run` itself. Run tools through
+  `bun run <script>` so they match CI. The `oxlint`
+  package stays only for the config's imports; nothing runs it. There is no ESLint or Prettier.
 - Avoid `as`: parse unknown data with zod. Narrowing assertions fail lint
   (`typescript/no-unsafe-type-assertion`); where one is really needed, disable that rule on the
   line with the reason why it holds. Never `as unknown as T`.

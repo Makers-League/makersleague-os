@@ -11,7 +11,7 @@ import { z } from "zod";
 import { defaultFixturesPath, fixturesSource } from "./fixtures";
 import { runSync } from "./sync";
 
-// Runs against the local Supabase stack (pnpm db:start). Each test starts from
+// Runs against the local Supabase stack (bun run db:start). Each test starts from
 // a freshly seeded database.
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54321";
 const secretKey = process.env.SUPABASE_SECRET_KEY;

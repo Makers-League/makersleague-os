@@ -7,9 +7,9 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "typecheck": "tsrs --noEmit",
-    "test": "vitest run --project unit",
-    "test:integration": "node --env-file-if-exists=../../.env.local ./node_modules/vitest/vitest.mjs run --project integration",
+    "typecheck": "bun check --no-script",
+    "test": "bun test --randomize --isolate --path-ignore-patterns='**/*.integration.test.ts' src",
+    "test:integration": "bun test --env-file=../../.env.local src/sync.integration.test.ts",
     "sync": "tsx --env-file-if-exists=../../.env.local src/cli.ts"
   },
   "dependencies": {

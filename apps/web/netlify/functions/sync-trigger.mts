@@ -3,7 +3,7 @@ import type { Config } from "@netlify/functions";
 /**
  * Scheduled functions stop after 30 seconds, so this one only starts the
  * background function. Scheduled functions run on the published deploy only;
- * use "Run now" in the Netlify UI or `pnpm sync` locally to test.
+ * use "Run now" in the Netlify UI or `bun run sync` locally to test.
  */
 export default async () => {
   const base = process.env.URL;

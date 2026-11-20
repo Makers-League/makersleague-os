@@ -5,14 +5,14 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-status="$(pnpm exec supabase status -o env 2>/dev/null)"
+status="$(bunx supabase status -o env 2>/dev/null)"
 value() { grep "^$1=" <<<"$status" | cut -d= -f2- | tr -d '"'; }
 
 url="$(value API_URL)"
 publishable="$(value PUBLISHABLE_KEY)"
 secret="$(value SECRET_KEY)"
 if [ -z "$secret" ]; then
-  echo "Local Supabase is not running. Start it with: pnpm db:start" >&2
+  echo "Local Supabase is not running. Start it with: bun run db:start" >&2
   exit 1
 fi
 

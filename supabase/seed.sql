@@ -1,5 +1,5 @@
 -- Test data only. No real member data goes into this repo.
--- Matches packages/easyverein/fixtures/members.json, so `pnpm sync` against a
+-- Matches packages/easyverein/fixtures/members.json, so `bun run sync` against a
 -- fresh database finds the same members.
 
 insert into public.clubs (id, slug, name) values

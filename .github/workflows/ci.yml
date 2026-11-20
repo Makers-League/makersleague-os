@@ -2,52 +2,74 @@ name: CI
 
 on:
   pull_request:
+  merge_group:
   push:
     branches: [main]
 
+# A new commit cancels the branch's run that is still going.
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# Every check is its own job, so they run in parallel and each shows up on its own.
+# Every check is its own job, so the PR shows which one failed. No job waits on another.
+permissions:
+  contents: read
+
 jobs:
   format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          filter: blob:none
       - uses: ./.github/actions/setup
-      - run: pnpm format:check
+      - run: bun run format:check
 
   lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          filter: blob:none
       - uses: ./.github/actions/setup
-      - run: pnpm lint
+      - run: bunx turbo run lint --output-logs=errors-only
 
   typecheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          filter: blob:none
       - uses: ./.github/actions/setup
-      - run: pnpm typecheck
+      - run: bunx turbo run typecheck --output-logs=errors-only
 
   unit:
     name: unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          filter: blob:none
+          # Full history only on PRs, where test selection needs the merge base.
+          fetch-depth: ${{ github.event_name == 'pull_request' && '0' || '1' }}
       - uses: ./.github/actions/setup
-      - run: pnpm test
+      # On pull requests, unit tests run only what the diff can reach (scripts/unit-tests.sh).
+      # Pushes to main and the merge queue run everything.
+      - name: Merge base
+        if: github.event_name == 'pull_request'
+        run: echo "BASE=$(git merge-base origin/${{ github.base_ref }} HEAD)" >> "$GITHUB_ENV"
+      - run: bash scripts/unit-tests.sh
 
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          filter: blob:none
       - uses: ./.github/actions/setup
-      # The build only needs well-formed values; nothing is called at build time.
-      - run: pnpm build
+      - run: bunx turbo run build --filter=@ml/web --output-logs=errors-only
         env:
+          # The build only needs well-formed values; nothing is called at build time.
           NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder
 
@@ -56,37 +78,60 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          filter: blob:none
+      - uses: ./.github/actions/supabase-start
       - uses: ./.github/actions/setup
-      - uses: ./.github/actions/supabase
+      - uses: ./.github/actions/supabase-wait
       - name: Generated types match the migrations
         run: |
-          pnpm db:types
+          bun run db:types
           git diff --exit-code packages/db/src/database.types.ts
       # The stack was just built from scratch, so no reset is needed here.
       - name: RLS tests (pgTAP)
-        run: pnpm exec supabase test db
+        run: bunx supabase test db
+      # Saves the images only on a cache miss.
+      - uses: ./.github/actions/supabase-save-images
+        if: ${{ !cancelled() }}
 
   sync:
     name: sync integration tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          filter: blob:none
+      - uses: ./.github/actions/supabase-start
       - uses: ./.github/actions/setup
-      - uses: ./.github/actions/supabase
-      - run: pnpm --filter @ml/easyverein test:integration
+      - uses: ./.github/actions/supabase-wait
+      - run: bun run test:integration
 
   e2e:
     name: e2e tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          filter: blob:none
+      # Supabase pulls its images while dependencies and the browser install.
+      - uses: ./.github/actions/supabase-start
       - uses: ./.github/actions/setup
-      - uses: ./.github/actions/supabase
+      - id: playwright-version
+        run: echo "version=$(jq -r '.devDependencies["@playwright/test"]' apps/web/package.json)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        id: playwright
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
+      # The runner image has Chromium's system libraries; only the browser build is needed.
       - name: Install Playwright browser
-        run: pnpm --filter @ml/web exec playwright install --with-deps chromium
+        if: steps.playwright.outputs.cache-hit != 'true'
+        working-directory: apps/web
+        run: bunx playwright install chromium
+      - uses: ./.github/actions/supabase-wait
       - name: Build app
-        run: pnpm turbo run build --filter=@ml/web
-      - run: pnpm test:e2e
+        run: bunx turbo run build --filter=@ml/web
+      - run: bun run test:e2e
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

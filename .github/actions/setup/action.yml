@@ -1,12 +1,23 @@
 name: Setup
-description: Node, pnpm and dependencies
+description: Bun, Node and dependencies (node_modules is cached per lockfile)
 runs:
   using: composite
   steps:
-    - uses: pnpm/action-setup@v4
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version-file: .bun-version
+    # Next.js and Playwright run on Node; the runner image already has Node 22.
     - uses: actions/setup-node@v5
       with:
         node-version: 22
-        cache: pnpm
-    - run: pnpm install --frozen-lockfile
+    - uses: actions/cache@v4
+      with:
+        path: |
+          node_modules
+          apps/*/node_modules
+          packages/*/node_modules
+        key: node-modules-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+        restore-keys: node-modules-${{ runner.os }}-
+    # A no-op in milliseconds on an exact hit; after a lockfile change it only fetches the diff.
+    - run: bun install --frozen-lockfile
       shell: bash

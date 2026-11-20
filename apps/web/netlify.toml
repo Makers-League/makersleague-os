@@ -4,8 +4,12 @@
 # pick the region next to the Supabase project (eu-west-1, Ireland).
 
 [build]
-command = "pnpm turbo run build --filter=@ml/web"
+command = "bunx turbo run build --filter=@ml/web"
 publish = ".next"
+
+# Netlify does not read .bun-version; keep the two in step.
+[build.environment]
+BUN_VERSION = "1.4.4"
 
 [functions]
 directory = "netlify/functions"
