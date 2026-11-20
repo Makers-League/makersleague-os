@@ -5,30 +5,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: canary
-      - run: bun --revision
-      - run: bun lint --help || true
-      - run: bun lint --doctor || true
-      - name: bun lint on the repo
-        run: time bun lint 2>&1 | tail -60 || true
-      - name: bun lint type-aware
-        run: time bun lint --type-aware 2>&1 | tail -60 || true
-      - name: oxlint for comparison
-        run: time pnpm exec oxlint 2>&1 | tail -20 || true
-      - name: probe file with known violations
-        run: |
-          cat > apps/web/lib/probe.ts <<'TS'
-          // A file with violations oxlint reports with our config
-          export function f(a: unknown) {
-            debugger;
-            const x = a as string;
-            if (x) return x!;
-            console.log(x);
-            return [1, 2].map((n) => n * 2);
-          }
-          TS
-          echo "--- oxlint"; pnpm exec oxlint apps/web/lib/probe.ts 2>&1 | tail -40 || true
-          echo "--- bun lint"; bun lint --type-aware apps/web/lib/probe.ts 2>&1 | tail -40 || true
+      - run: bun install --frozen-lockfile
+      - run: bun run --cwd apps/web typegen
+      - run: bash scripts/tmp/lint-probe.sh

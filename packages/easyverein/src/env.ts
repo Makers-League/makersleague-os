@@ -30,7 +30,7 @@ export const sourceFromEnv = (env: Env = process.env): MemberSource => {
   throw new Error(`Unknown EASYVEREIN_SOURCE: ${kind}`);
 };
 
-/** Used by `pnpm sync` and the Netlify background function. */
+/** Used by `bun run sync` and the Netlify background function. */
 export const syncClubFromEnv = async (env: Env = process.env) => {
   const client = createAdminClient(
     required(env, "NEXT_PUBLIC_SUPABASE_URL"),

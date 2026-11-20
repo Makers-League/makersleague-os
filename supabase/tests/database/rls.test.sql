@@ -1,4 +1,4 @@
--- Row level security per role. Run with `pnpm test:db` (supabase test db).
+-- Row level security per role. Run with `bun run test:db` (supabase test db).
 -- Works on the seeded database; everything happens in one rolled-back transaction.
 begin;
 create extension if not exists pgtap with schema extensions;

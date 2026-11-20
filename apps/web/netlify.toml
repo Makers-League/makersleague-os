@@ -4,7 +4,7 @@
 # pick the region next to the Supabase project (eu-west-1, Ireland).
 
 [build]
-command = "pnpm turbo run build --filter=@ml/web"
+command = "bunx turbo run build --filter=@ml/web"
 publish = ".next"
 
 [functions]

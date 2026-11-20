@@ -1,9 +1,13 @@
 {
   "name": "makersleague-os",
   "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "type": "module",
   "scripts": {
-    "dev": "pnpm db:start && turbo run dev",
+    "dev": "bun run db:start && turbo run dev",
     "build": "turbo run build",
     "check": "bun fmt && turbo run lint:oxlint typecheck test",
     "lint": "turbo run lint:oxlint --output-logs=errors-only",
@@ -11,7 +15,8 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "test:db": "bash scripts/db-reseed.sh && supabase test db",
-    "test:e2e": "pnpm --filter @ml/web test:e2e",
+    "test:integration": "bun run --cwd packages/easyverein test:integration",
+    "test:e2e": "bun run --cwd apps/web test:e2e",
     "format": "bun fmt",
     "format:check": "bun fmt --check",
     "db:start": "supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,storage-api,supavisor,postgres-meta",
@@ -20,7 +25,7 @@
     "db:reseed": "bash scripts/db-reseed.sh",
     "db:migrate:new": "supabase migration new",
     "db:types": "supabase gen types typescript --schema public > packages/db/src/database.types.ts && bun fmt packages/db/src/database.types.ts",
-    "sync": "pnpm --filter @ml/easyverein sync",
+    "sync": "bun run --cwd packages/easyverein sync",
     "env:local": "bash scripts/local-env.sh"
   },
   "devDependencies": {
@@ -33,12 +38,10 @@
   "engines": {
     "node": ">=22"
   },
-  "packageManager": "pnpm@10.28.0",
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "supabase",
-      "sharp",
-      "esbuild"
-    ]
-  }
+  "packageManager": "bun@1.4.4",
+  "trustedDependencies": [
+    "supabase",
+    "sharp",
+    "esbuild"
+  ]
 }

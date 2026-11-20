@@ -3,7 +3,7 @@ description: Starts the local stack (all migrations + seed from scratch) and wri
 runs:
   using: composite
   steps:
-    - run: pnpm db:start
+    - run: bun run db:start
       shell: bash
-    - run: pnpm env:local
+    - run: bun run env:local
       shell: bash

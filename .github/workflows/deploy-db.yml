@@ -47,7 +47,7 @@ jobs:
       # Supabase CLI 3 targets the local database by default: --remote is required.
       - name: Push migrations to the cloud project
         run: |
-          pnpm exec supabase db push --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --yes
+          bunx supabase db push --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --yes
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          pnpm exec supabase migration list --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" >> "$GITHUB_STEP_SUMMARY"
+          bunx supabase migration list --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
