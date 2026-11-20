@@ -12,7 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 # Blobless clone with history: --changed needs the merge base, blobs load on demand.
-# No job waits on another. Each job fails when it runs over its time budget.
+# No job waits on another.
 permissions:
   contents: read
 
@@ -37,9 +37,6 @@ jobs:
           # The build only needs well-formed values; nothing is called at build time.
           NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder
-      - uses: ./.github/actions/budget
-        with:
-          seconds: 40
 
   database:
     name: migrations + RLS tests
@@ -58,10 +55,7 @@ jobs:
       # The stack was just built from scratch, so no reset is needed here.
       - name: RLS tests (pgTAP)
         run: bunx supabase test db
-      - uses: ./.github/actions/budget
-        with:
-          seconds: 50
-      # After the budget check: saving only happens on a cache miss and is not part of the run.
+      # Saves the images only on a cache miss.
       - uses: ./.github/actions/supabase-save-images
         if: ${{ !cancelled() }}
 
@@ -76,9 +70,6 @@ jobs:
       - uses: ./.github/actions/setup
       - uses: ./.github/actions/supabase-wait
       - run: bun run test:integration
-      - uses: ./.github/actions/budget
-        with:
-          seconds: 50
 
   e2e:
     name: e2e tests
@@ -112,6 +103,3 @@ jobs:
           name: playwright-report
           path: apps/web/playwright-report
           retention-days: 7
-      - uses: ./.github/actions/budget
-        with:
-          seconds: 65

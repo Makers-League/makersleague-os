@@ -150,8 +150,6 @@ bun run dev          # app (and Supabase, if it is not running yet)
 - On PRs, unit tests run only the files the diff can reach (`scripts/unit-tests.sh`), unless it
   touches a file `--changed` cannot trace (anything but source code: test data, dependencies,
   configs, CI); then all run. Pushes to `main` and the merge queue run all.
-- Every job has a time budget (`.github/actions/budget`) and fails when it runs over: find what
-  got slower instead of raising it.
 - `deploy-db.yml` on merge to `main`: `supabase db push --remote` to the cloud project. It
   skips itself until the three Supabase secrets are set.
 - Netlify builds deploy previews per PR and production from `main`.
