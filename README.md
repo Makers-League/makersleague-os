@@ -142,9 +142,15 @@ bun run dev          # app (and Supabase, if it is not running yet)
 
 ## CI and deploys
 
-- `ci.yml` on every PR and push to `main`, one parallel job per check: format, lint,
-  typecheck, unit tests, build, migrations + RLS tests (type drift check, pgTAP), sync
-  integration tests and Playwright e2e. The last three each start a local Supabase.
+- `ci.yml` on every PR, merge queue run and push to `main`, four parallel jobs, none waiting on
+  another: checks (format, lint, typecheck, unit tests and build at once, listing every
+  failure), migrations + RLS tests (type drift check, pgTAP), sync integration tests and
+  Playwright e2e. The last three start Supabase in the background first, from Docker images in
+  the Actions cache.
+- On PRs, unit tests run only the files the diff can reach (`scripts/unit-tests.sh`), unless it
+  touches dependencies, tsconfig, Bun or CI files. Pushes to `main` and the merge queue run all.
+- Every job has a time budget (`.github/actions/budget`) and fails when it runs over: find what
+  got slower instead of raising it.
 - `deploy-db.yml` on merge to `main`: `supabase db push --remote` to the cloud project. It
   skips itself until the three Supabase secrets are set.
 - Netlify builds deploy previews per PR and production from `main`.
