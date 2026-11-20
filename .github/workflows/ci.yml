@@ -11,14 +11,40 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# Blobless clone with history: --changed needs the merge base, blobs load on demand.
-# No job waits on another.
+# Every check is its own job, so the PR shows which one failed. No job waits on another.
 permissions:
   contents: read
 
 jobs:
-  checks:
-    name: format, lint, typecheck, unit tests, build
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          filter: blob:none
+      - uses: ./.github/actions/setup
+      - run: bun run format:check
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          filter: blob:none
+      - uses: ./.github/actions/setup
+      - run: bunx turbo run lint --output-logs=errors-only
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          filter: blob:none
+      - uses: ./.github/actions/setup
+      - run: bunx turbo run typecheck --output-logs=errors-only
+
+  unit:
+    name: unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -32,7 +58,16 @@ jobs:
       - name: Merge base
         if: github.event_name == 'pull_request'
         run: echo "BASE=$(git merge-base origin/${{ github.base_ref }} HEAD)" >> "$GITHUB_ENV"
-      - run: bash scripts/ci-checks.sh
+      - run: bash scripts/unit-tests.sh
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          filter: blob:none
+      - uses: ./.github/actions/setup
+      - run: bunx turbo run build --filter=@ml/web --output-logs=errors-only
         env:
           # The build only needs well-formed values; nothing is called at build time.
           NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
