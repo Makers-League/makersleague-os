@@ -1,5 +1,5 @@
 name: Setup
-description: Node, pnpm and dependencies
+description: Node, pnpm, Bun and dependencies
 runs:
   using: composite
   steps:
@@ -8,5 +8,8 @@ runs:
       with:
         node-version: 22
         cache: pnpm
+    - uses: oven-sh/setup-bun@v2
+      with:
+        bun-version-file: .bun-version
     - run: pnpm install --frozen-lockfile
       shell: bash

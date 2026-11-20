@@ -16,8 +16,8 @@ sync from easyVerein. Built to serve more clubs later, so every table carries `c
 | DB access | `supabase-js` with generated types, no ORM                                 |
 | Email     | Lettermint as Supabase SMTP (cloud); Mailpit catches all mail locally      |
 | Hosting   | Netlify (app + scheduled sync)                                             |
-| Tooling   | TypeScript 7, oxlint (type-aware via tsrs), oxfmt (import + class order)   |
-| Tests     | Vitest, pgTAP (`supabase test db`), Playwright                             |
+| Tooling   | TypeScript 7, Bun (check, fmt, test), oxlint (type-aware via tsrs)         |
+| Tests     | `bun test` (Vitest API), pgTAP (`supabase test db`), Playwright            |
 
 ## Layout
 
@@ -42,7 +42,7 @@ supabase/
 
 ## Getting started
 
-Needs Node.js 22+, pnpm 10 and Docker (or OrbStack).
+Needs Node.js 22+, pnpm 10, Bun (version in `.bun-version`) and Docker (or OrbStack).
 
 ```sh
 pnpm install
@@ -68,9 +68,9 @@ pnpm dev          # app (and Supabase, if it is not running yet)
 | `pnpm db:reseed`                                | back to `seed.sql` in 0.2s; full reset only if migrations changed  |
 | `pnpm db:types`                                 | regenerate `packages/db/src/database.types.ts`                     |
 | `pnpm sync`                                     | run the easyVerein sync against local Supabase (fixtures)          |
-| `pnpm lint` / `pnpm format`                     | oxlint incl. type errors (tsrs) / oxfmt                            |
-| `pnpm typecheck`                                | `tsrs --noEmit` (Rust port of TypeScript 7) in every package       |
-| `pnpm test`                                     | unit tests (Vitest)                                                |
+| `pnpm lint` / `pnpm format`                     | oxlint incl. type errors (tsrs) / `bun fmt`                        |
+| `pnpm typecheck`                                | `bun check` (TypeScript 7 errors) in every package                 |
+| `pnpm test`                                     | unit tests (`bun test`)                                            |
 | `pnpm test:db`                                  | pgTAP tests for row level security                                 |
 | `pnpm --filter @ml/easyverein test:integration` | sync against local Supabase                                        |
 | `pnpm test:e2e`                                 | Playwright against local Supabase + app, in parallel               |

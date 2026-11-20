@@ -60,11 +60,12 @@ In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` 
   refresh-token endpoint: it rotates the website's production token.
 - No real member data in code, fixtures, seeds or tests. Use `@example.com` addresses.
 - UI text is German.
-- TypeScript 7. Type checking runs on tsrs, the Rust port of the TypeScript 7 compiler
-  (`pnpm typecheck` is `tsrs --noEmit` per package; `next build` still uses the `typescript`
-  package). Lint with oxlint (type-aware through tsrs, which also reports type errors in every
+- TypeScript 7. Bun (pinned in `.bun-version`) runs type checking (`bun check` per package,
+  same errors as tsc 7), formatting (`bun fmt`, reads `.oxfmtrc.json`) and unit tests
+  (`bun test`; tests still import from `vitest`, Bun provides that API). `next build` still
+  uses the `typescript` package. Lint with oxlint (type-aware through tsrs, which also reports type errors in every
   package in one pass) using Cloudflare's preset `@cloudflare/oxlint-config` plus the project
-  additions in `oxlint.config.ts`; format with oxfmt. There is no ESLint or Prettier (the preset
+  additions in `oxlint.config.ts`. There is no ESLint or Prettier (the preset
   pulls in ESLint plugin packages, which oxlint loads itself).
 - Avoid `as`: parse unknown data with zod. Narrowing assertions fail lint
   (`typescript/no-unsafe-type-assertion`); where one is really needed, disable that rule on the

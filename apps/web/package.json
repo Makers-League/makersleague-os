@@ -8,8 +8,8 @@
     "build": "next build",
     "start": "next start",
     "typegen": "next typegen",
-    "typecheck": "tsrs --noEmit",
-    "test": "vitest run",
+    "typecheck": "bun check --no-script",
+    "test": "bun test lib",
     "test:e2e": "node --env-file-if-exists=.env.local ./node_modules/@playwright/test/cli.js test --trace off"
   },
   "dependencies": {

@@ -81,9 +81,17 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/setup
-      - uses: ./.github/actions/supabase
+      # Supabase pulls its images while the browser installs.
+      - name: Start Supabase in the background
+        run: (pnpm db:start > "$RUNNER_TEMP/supabase.log" 2>&1; echo $? > "$RUNNER_TEMP/supabase.exit") &
       - name: Install Playwright browser
         run: pnpm --filter @ml/web exec playwright install --with-deps chromium
+      - name: Wait for Supabase
+        run: |
+          until [ -f "$RUNNER_TEMP/supabase.exit" ]; do sleep 1; done
+          cat "$RUNNER_TEMP/supabase.log"
+          exit "$(cat "$RUNNER_TEMP/supabase.exit")"
+      - run: pnpm env:local
       - name: Build app
         run: pnpm turbo run build --filter=@ml/web
       - run: pnpm test:e2e
