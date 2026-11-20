@@ -16,7 +16,7 @@ sync from easyVerein. Built to serve more clubs later, so every table carries `c
 | DB access | `supabase-js` with generated types, no ORM                                 |
 | Email     | Lettermint as Supabase SMTP (cloud); Mailpit catches all mail locally      |
 | Hosting   | Netlify (app + scheduled sync)                                             |
-| Tooling   | TypeScript 7, Bun (install, check, fmt, test, lint), hk git hooks          |
+| Tooling   | TypeScript 7, Bun (install, check, fmt, test, lint)                        |
 | Tests     | `bun test` (Vitest API), pgTAP (`supabase test db`), Playwright            |
 
 ## Layout
@@ -42,7 +42,7 @@ supabase/
 
 ## Getting started
 
-Needs Node.js 22+, Bun (version in `.bun-version`), Docker (or OrbStack) and [hk](https://hk.jdx.dev) for the git hooks (`brew install hk` or `mise use -g hk`, then `hk install`).
+Needs Node.js 22+, Bun (version in `.bun-version`) and Docker (or OrbStack).
 
 ```sh
 bun install

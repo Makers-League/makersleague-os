@@ -71,8 +71,6 @@ In a cloud container, start Docker first with `dockerd &`, then `bun run db:star
   installer and runtime for `bun install` and `bun run` itself. Run tools through
   `bun run <script>` so they match CI. The `oxlint`
   package stays only for the config's imports; nothing runs it. There is no ESLint or Prettier.
-- Git hooks run through hk (`hk.pkl`, install once with `hk install`): pre-commit formats and
-  lints staged files, pre-push runs `bun run check`.
 - Avoid `as`: parse unknown data with zod. Narrowing assertions fail lint
   (`typescript/no-unsafe-type-assertion`); where one is really needed, disable that rule on the
   line with the reason why it holds. Never `as unknown as T`.
