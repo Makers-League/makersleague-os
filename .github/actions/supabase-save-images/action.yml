@@ -1,0 +1,13 @@
+name: Save Supabase images
+description: On a cache miss, saves the stack's Docker images for later runs (one job does this).
+runs:
+  using: composite
+  steps:
+    - if: env.SUPABASE_IMAGES_HIT != 'true'
+      shell: bash
+      run: docker save $(docker images --format '{{.Repository}}:{{.Tag}}' | grep supabase/) | zstd -T0 -3 -q -o ~/supabase-images.tar.zst
+    - if: env.SUPABASE_IMAGES_HIT != 'true'
+      uses: actions/cache/save@v4
+      with:
+        path: ~/supabase-images.tar.zst
+        key: ${{ env.SUPABASE_IMAGES_KEY }}
