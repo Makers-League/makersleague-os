@@ -16,7 +16,7 @@ sync from easyVerein. Built to serve more clubs later, so every table carries `c
 | DB access | `supabase-js` with generated types, no ORM                                 |
 | Email     | Lettermint as Supabase SMTP (cloud); Mailpit catches all mail locally      |
 | Hosting   | Netlify (app + scheduled sync)                                             |
-| Tooling   | TypeScript 7, Bun (check, fmt, test), oxlint (type-aware via tsrs)         |
+| Tooling   | TypeScript 7, Bun (install, check, fmt, test, lint), hk git hooks          |
 | Tests     | `bun test` (Vitest API), pgTAP (`supabase test db`), Playwright            |
 
 ## Layout
@@ -42,7 +42,7 @@ supabase/
 
 ## Getting started
 
-Needs Node.js 22+, Bun (version in `.bun-version`) and Docker (or OrbStack).
+Needs Node.js 22+, Bun (version in `.bun-version`), Docker (or OrbStack) and [hk](https://hk.jdx.dev) for the git hooks (`brew install hk` or `mise use -g hk`, then `hk install`).
 
 ```sh
 bun install
@@ -68,7 +68,7 @@ bun run dev          # app (and Supabase, if it is not running yet)
 | `bun run db:reseed`               | back to `seed.sql` in 0.2s; full reset only if migrations changed  |
 | `bun run db:types`                | regenerate `packages/db/src/database.types.ts`                     |
 | `bun run sync`                    | run the easyVerein sync against local Supabase (fixtures)          |
-| `bun run lint` / `bun run format` | oxlint incl. type errors (tsrs) / `bun fmt`                        |
+| `bun run lint` / `bun run format` | `bun lint` incl. type errors / `bun fmt`                           |
 | `bun run typecheck`               | `bun check` (TypeScript 7 errors) in every package                 |
 | `bun run test`                    | unit tests (`bun test`)                                            |
 | `bun run test:db`                 | pgTAP tests for row level security                                 |

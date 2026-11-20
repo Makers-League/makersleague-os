@@ -9,9 +9,8 @@
   "scripts": {
     "dev": "bun run db:start && turbo run dev",
     "build": "turbo run build",
-    "check": "bun fmt && turbo run lint:oxlint typecheck test",
-    "lint": "turbo run lint:oxlint --output-logs=errors-only",
-    "lint:oxlint": "oxlint",
+    "check": "bun fmt && turbo run lint typecheck test",
+    "lint": "bun lint --no-script --type-aware",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "test:db": "bash scripts/db-reseed.sh && supabase test db",
@@ -30,9 +29,9 @@
   },
   "devDependencies": {
     "@cloudflare/oxlint-config": "0.1.0",
+    "bun": "1.4.5-canary.20261119.1",
     "oxlint": "1.94.0",
     "supabase": "3.2.0",
-    "tsrs": "0.25.0-ts7.1.0-beta",
     "turbo": "2.11.12"
   },
   "engines": {
@@ -40,8 +39,9 @@
   },
   "packageManager": "bun@1.4.4",
   "trustedDependencies": [
-    "supabase",
+    "bun",
+    "esbuild",
     "sharp",
-    "esbuild"
+    "supabase"
   ]
 }

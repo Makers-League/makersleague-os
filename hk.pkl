@@ -16,8 +16,8 @@ hooks {
       }
       ["lint"] {
         glob = code
-        check = "bunx oxlint {{ files }}"
-        fix = "bunx oxlint --fix {{ files }}"
+        check = "bun run lint {{ files }}"
+        fix = "bun run lint --fix {{ files }}"
       }
     }
   }

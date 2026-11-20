@@ -10,7 +10,7 @@ declare -A cmds=(
   [unit]="bash scripts/unit-tests.sh"
   # One turbo run, so Next's typegen runs once for lint and build. --continue reports every
   # failing task.
-  [lint+typecheck+build]="bunx turbo run lint:oxlint typecheck build --continue --output-logs=errors-only"
+  [lint+typecheck+build]="bunx turbo run lint typecheck build --continue --output-logs=errors-only"
 )
 for name in "${!cmds[@]}"; do
   (start=$(date +%s%N); ${cmds[$name]} >"$dir/$name.log" 2>&1; echo "$? $(( ($(date +%s%N) - start) / 1000000 ))" >"$dir/$name.exit") &

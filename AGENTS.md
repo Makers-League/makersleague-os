@@ -63,10 +63,13 @@ In a cloud container, start Docker first with `dockerd &`, then `bun run db:star
 - TypeScript 7. Bun (pinned in `.bun-version`) runs type checking (`bun check` per package,
   same errors as tsc 7), formatting (`bun fmt`, reads `.oxfmtrc.json`) and unit tests
   (`bun test`; tests still import from `vitest`, Bun provides that API). `next build` still
-  uses the `typescript` package. Lint with oxlint (type-aware through tsrs, which also reports type errors in every
-  package in one pass) using Cloudflare's preset `@cloudflare/oxlint-config` plus the project
-  additions in `oxlint.config.ts`. There is no ESLint or Prettier (the preset
-  pulls in ESLint plugin packages, which oxlint loads itself).
+  uses the `typescript` package. Lint with `bun lint --type-aware` (also reports type errors in
+  every package in one pass), which reads `oxlint.config.ts`: Cloudflare's preset
+  `@cloudflare/oxlint-config` plus the project additions. `bun lint` only exists in Bun canary,
+  so the `bun` devDependency pins an exact canary and `bun run lint` uses it. The `oxlint`
+  package stays only for the config's imports; nothing runs it. There is no ESLint or Prettier.
+- Git hooks run through hk (`hk.pkl`, install once with `hk install`): pre-commit formats and
+  lints staged files, pre-push runs `bun run check`.
 - Avoid `as`: parse unknown data with zod. Narrowing assertions fail lint
   (`typescript/no-unsafe-type-assertion`); where one is really needed, disable that rule on the
   line with the reason why it holds. Never `as unknown as T`.

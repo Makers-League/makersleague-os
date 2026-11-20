@@ -15,7 +15,7 @@
       "dependsOn": ["^typecheck", "typegen"]
     },
     "test": {},
-    "//#lint:oxlint": {
+    "//#lint": {
       "dependsOn": ["@ml/web#typegen"],
       "cache": false
     },
