@@ -3,7 +3,8 @@ description: Bun, Node and dependencies (node_modules is cached per lockfile)
 runs:
   using: composite
   steps:
-    - run: echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+    # Start of the job's time budget, unless supabase-start set it earlier.
+    - run: '[ -n "${JOB_START:-}" ] || echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"'
       shell: bash
     - uses: oven-sh/setup-bun@v2
       with:

@@ -1,0 +1,18 @@
+name: Start Supabase in the background
+description: >
+  Installs the Supabase CLI binary (same version as package.json) and starts the local stack in
+  the background, so its image pulls overlap with dependency install and other setup. Pair with
+  ./.github/actions/supabase-wait.
+runs:
+  using: composite
+  steps:
+    - id: version
+      shell: bash
+      run: |
+        echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+        echo "supabase=$(jq -r .devDependencies.supabase package.json)" >> "$GITHUB_OUTPUT"
+    - uses: supabase/setup-cli@v1
+      with:
+        version: ${{ steps.version.outputs.supabase }}
+    - shell: bash
+      run: (bash scripts/db-start.sh > "$RUNNER_TEMP/supabase.log" 2>&1; echo $? > "$RUNNER_TEMP/supabase.exit") &

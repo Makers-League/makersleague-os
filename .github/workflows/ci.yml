@@ -44,8 +44,9 @@ jobs:
       - uses: actions/checkout@v5
         with:
           filter: blob:none
+      - uses: ./.github/actions/supabase-start
       - uses: ./.github/actions/setup
-      - uses: ./.github/actions/supabase
+      - uses: ./.github/actions/supabase-wait
       - name: Generated types match the migrations
         run: |
           bun run db:types
@@ -64,8 +65,9 @@ jobs:
       - uses: actions/checkout@v5
         with:
           filter: blob:none
+      - uses: ./.github/actions/supabase-start
       - uses: ./.github/actions/setup
-      - uses: ./.github/actions/supabase
+      - uses: ./.github/actions/supabase-wait
       - run: bun run test:integration
       - uses: ./.github/actions/budget
         with:
@@ -78,10 +80,9 @@ jobs:
       - uses: actions/checkout@v5
         with:
           filter: blob:none
+      # Supabase pulls its images while dependencies and the browser install.
+      - uses: ./.github/actions/supabase-start
       - uses: ./.github/actions/setup
-      # Supabase pulls its images while the browser installs.
-      - name: Start Supabase in the background
-        run: (bun run db:start > "$RUNNER_TEMP/supabase.log" 2>&1; echo $? > "$RUNNER_TEMP/supabase.exit") &
       - uses: actions/cache@v4
         id: playwright
         with:
@@ -92,12 +93,7 @@ jobs:
         if: steps.playwright.outputs.cache-hit != 'true'
         working-directory: apps/web
         run: bunx playwright install chromium
-      - name: Wait for Supabase
-        run: |
-          until [ -f "$RUNNER_TEMP/supabase.exit" ]; do sleep 1; done
-          cat "$RUNNER_TEMP/supabase.log"
-          exit "$(cat "$RUNNER_TEMP/supabase.exit")"
-      - run: bun run env:local
+      - uses: ./.github/actions/supabase-wait
       - name: Build app
         run: bunx turbo run build --filter=@ml/web
       - run: bun run test:e2e

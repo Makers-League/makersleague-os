@@ -1,0 +1,12 @@
+name: Wait for Supabase
+description: Waits for ./.github/actions/supabase-start, fails with its log if it failed, and writes .env.local.
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        until [ -f "$RUNNER_TEMP/supabase.exit" ]; do sleep 1; done
+        cat "$RUNNER_TEMP/supabase.log"
+        code=$(cat "$RUNNER_TEMP/supabase.exit")
+        [ "$code" = 0 ] || exit "$code"
+        bun run env:local

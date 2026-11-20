@@ -19,7 +19,7 @@
     "test:e2e": "bun run --cwd apps/web test:e2e",
     "format": "bun fmt",
     "format:check": "bun fmt --check",
-    "db:start": "supabase start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,storage-api,supavisor,postgres-meta",
+    "db:start": "bash scripts/db-start.sh",
     "db:stop": "supabase stop",
     "db:reset": "bash scripts/db-reseed.sh --full",
     "db:reseed": "bash scripts/db-reseed.sh",
