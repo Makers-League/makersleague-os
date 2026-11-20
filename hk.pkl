@@ -11,8 +11,8 @@ hooks {
     steps {
       ["format"] {
         glob = List("**/*.{ts,tsx,js,mjs,mts,json,md,yml,yaml,css,html}")
-        check = "bun fmt --check {{ files }}"
-        fix = "bun fmt {{ files }}"
+        check = "bun run format:check {{ files }}"
+        fix = "bun run format {{ files }}"
       }
       ["lint"] {
         glob = code

@@ -37,15 +37,16 @@ jobs:
     needs: guard
     if: needs.guard.outputs.ready == 'true'
     runs-on: ubuntu-latest
-    env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
-      SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/setup
       # Supabase CLI 3 targets the local database by default: --remote is required.
+      # Secrets only in this step, so setup actions and install scripts never see them.
       - name: Push migrations to the cloud project
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
         run: |
           bunx supabase db push --remote="$SUPABASE_PROJECT_REF" --password "$SUPABASE_DB_PASSWORD" --yes
           echo '```' >> "$GITHUB_STEP_SUMMARY"

@@ -7,6 +7,10 @@
 command = "bunx turbo run build --filter=@ml/web"
 publish = ".next"
 
+# Netlify does not read .bun-version; keep the two in step.
+[build.environment]
+BUN_VERSION = "1.4.4"
+
 [functions]
 directory = "netlify/functions"
 node_bundler = "esbuild"

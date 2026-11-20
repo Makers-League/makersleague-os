@@ -13,6 +13,9 @@ concurrency:
 
 # Blobless clone with history: --changed needs the merge base, blobs load on demand.
 # No job waits on another. Each job fails when it runs over its time budget.
+permissions:
+  contents: read
+
 jobs:
   checks:
     name: format, lint, typecheck, unit tests, build

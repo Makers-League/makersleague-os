@@ -5,8 +5,12 @@ runs:
   steps:
     - shell: bash
       run: |
-        until [ -f "$RUNNER_TEMP/supabase.exit" ]; do sleep 1; done
+        for _ in $(seq 180); do [ -f "$RUNNER_TEMP/supabase.exit" ] && break; sleep 1; done
         cat "$RUNNER_TEMP/supabase.log"
+        if [ ! -f "$RUNNER_TEMP/supabase.exit" ]; then
+          echo "::error::Supabase did not start within 3 minutes."
+          exit 1
+        fi
         code=$(cat "$RUNNER_TEMP/supabase.exit")
         [ "$code" = 0 ] || exit "$code"
         bun run env:local

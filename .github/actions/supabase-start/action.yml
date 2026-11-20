@@ -23,7 +23,9 @@ runs:
       run: |
         echo "SUPABASE_IMAGES_HIT=${{ steps.images.outputs.cache-hit }}" >> "$GITHUB_ENV"
         echo "SUPABASE_IMAGES_KEY=${{ steps.images.outputs.cache-primary-key }}" >> "$GITHUB_ENV"
+        # set +e: the step's -e would end the subshell on a failure before it writes the exit code.
         (
+          set +e
           start=$(date +%s)
           if [ -f ~/supabase-images.tar.zst ]; then zstd -dc ~/supabase-images.tar.zst | docker load -q; fi
           echo "images ready after $(( $(date +%s) - start ))s"

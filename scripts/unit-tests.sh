@@ -1,16 +1,19 @@
 #!/usr/bin/env bash
 # Runs every package's `test` script (the flags live there). On a pull request (BASE set to the
-# merge base), only the test files the diff can reach run, unless the diff touches an input that
-# can change any test's result; then everything runs.
+# merge base), only the test files the diff can reach run. `--changed` only follows imports, so
+# any changed file that is not source code (data a test reads, dependencies, configs, CI) runs
+# everything.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
 extra=()
 if [ -n "${BASE:-}" ]; then
-  # Inputs that rerun everything: dependencies, compiler and test-runner settings, CI itself.
-  everything='^(bun\.lock|package\.json|.*/package\.json|bunfig\.toml|\.bun-version|.*tsconfig.*\.json|turbo\.json|scripts/unit-tests\.sh|\.github/)'
-  if git diff --name-only "$BASE" HEAD | grep -qE "$everything"; then
-    echo "Diff touches a global input: running every unit test."
+  changed=$(git diff --name-only "$BASE" HEAD)
+  # Files --changed can trace or that no unit test reads. Everything else reruns all tests.
+  traced='\.(ts|tsx|mts|js|mjs|md|css|sql)$'
+  if grep -vE "$traced" <<<"$changed" | grep -q .; then
+    echo "Diff touches a file outside the import graph: running every unit test."
+    grep -vE "$traced" <<<"$changed" | head -5
   else
     extra=(-- "--changed=$BASE")
   fi

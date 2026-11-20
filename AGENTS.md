@@ -60,13 +60,16 @@ In a cloud container, start Docker first with `dockerd &`, then `bun run db:star
   refresh-token endpoint: it rotates the website's production token.
 - No real member data in code, fixtures, seeds or tests. Use `@example.com` addresses.
 - UI text is German.
-- TypeScript 7. Bun (pinned in `.bun-version`) runs type checking (`bun check` per package,
+- TypeScript 7. Bun runs type checking (`bun check` per package,
   same errors as tsc 7), formatting (`bun fmt`, reads `.oxfmtrc.json`) and unit tests
   (`bun test`; tests still import from `vitest`, Bun provides that API). `next build` still
   uses the `typescript` package. Lint with `bun lint --type-aware` (also reports type errors in
   every package in one pass), which reads `oxlint.config.ts`: Cloudflare's preset
   `@cloudflare/oxlint-config` plus the project additions. `bun lint` only exists in Bun canary,
-  so the `bun` devDependency pins an exact canary and `bun run lint` uses it. The `oxlint`
+  so the `bun` devDependency pins an exact canary. `bun run` puts it first on PATH, so every
+  package script (fmt, check, test, lint) runs that canary; `.bun-version` is only the
+  installer and runtime for `bun install` and `bun run` itself. Run tools through
+  `bun run <script>` so they match CI. The `oxlint`
   package stays only for the config's imports; nothing runs it. There is no ESLint or Prettier.
 - Git hooks run through hk (`hk.pkl`, install once with `hk install`): pre-commit formats and
   lints staged files, pre-push runs `bun run check`.
