@@ -16,9 +16,12 @@ import { runSync } from "./sync";
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "http://127.0.0.1:54321";
 const secretKey = process.env.SUPABASE_SECRET_KEY;
 const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-if (!publishableKey)
+if (!publishableKey) {
   throw new Error("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY is not set (see .env.example)");
-if (!secretKey) throw new Error("SUPABASE_SECRET_KEY is not set (see .env.example)");
+}
+if (!secretKey) {
+  throw new Error("SUPABASE_SECRET_KEY is not set (see .env.example)");
+}
 
 const client = createAdminClient(url, secretKey);
 const clubId = "00000000-0000-4000-8000-000000000001";
@@ -37,7 +40,9 @@ const member = async (easyvereinId: string) => {
     .eq("club_id", clubId)
     .eq("easyverein_id", easyvereinId)
     .single();
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   return data;
 };
 

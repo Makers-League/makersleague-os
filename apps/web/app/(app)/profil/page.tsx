@@ -10,14 +10,18 @@ export const metadata: Metadata = { title: "Mein Profil" };
 
 export default async function ProfilePage() {
   const { member, supabase } = await getCurrentMember();
-  if (!member) return null;
+  if (!member) {
+    return null;
+  }
 
   const { data: profile, error } = await supabase
     .from("profiles")
     .select("bio, links, visibility")
     .eq("member_id", member.id)
     .maybeSingle();
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 
   const links = z.array(z.string()).catch([]).parse(profile?.links);
 

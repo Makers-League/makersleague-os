@@ -24,12 +24,12 @@ export type ExistingMember = Pick<
 export type MemberValues = ReturnType<typeof toValues>;
 
 export type SyncPlan = {
-  inserts: MemberValues[];
+  inserts: Array<MemberValues>;
   /** Changed members, including ones that reappeared after being marked deleted. */
-  updates: { id: string; values: MemberValues; restored: boolean }[];
-  unchangedIds: string[];
+  updates: Array<{ id: string; values: MemberValues; restored: boolean }>;
+  unchangedIds: Array<string>;
   /** Members missing in easyVerein: they get deleted_at, nothing is removed. */
-  markDeletedIds: string[];
+  markDeletedIds: Array<string>;
   stop: { reason: string } | null;
 };
 
@@ -55,7 +55,7 @@ const fields = [
   "membership_type",
   "joined_on",
   "left_on",
-] as const satisfies readonly (keyof MemberValues)[];
+] as const satisfies ReadonlyArray<keyof MemberValues>;
 
 /**
  * Decide what one sync run changes. Pure, so every rule is unit-tested:
@@ -67,9 +67,9 @@ const fields = [
  * valid email). They still exist there, so they are left as they are.
  */
 export const planSync = (
-  existing: ExistingMember[],
-  incoming: SourceMember[],
-  skippedIds: string[] = [],
+  existing: Array<ExistingMember>,
+  incoming: Array<SourceMember>,
+  skippedIds: Array<string> = [],
   maxDeleteRatio = MAX_DELETE_RATIO,
 ): SyncPlan => {
   const seen = new Set<string>(skippedIds);

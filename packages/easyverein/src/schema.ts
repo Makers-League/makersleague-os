@@ -28,16 +28,24 @@ const emailSchema = z.email();
 
 /** easyVerein sends timestamps such as 2024-01-31T00:00:00+01:00; we keep the calendar date. */
 export const toIsoDate = (value: string | null): string | null => {
-  if (!value) return null;
+  if (!value) {
+    return null;
+  }
   const match = /^(\d{4}-\d{2}-\d{2})/.exec(value);
-  if (!match?.[1]) throw new Error(`Unexpected date from easyVerein: ${value}`);
+  if (!match?.[1]) {
+    throw new Error(`Unexpected date from easyVerein: ${value}`);
+  }
   return match[1];
 };
 
 export const deriveStatus = (member: EasyVereinMember, today: string): MemberStatus => {
-  if (member._isApplication) return "application";
+  if (member._isApplication) {
+    return "application";
+  }
   const leftOn = toIsoDate(member.resignationDate);
-  if (leftOn && leftOn <= today) return "resigned";
+  if (leftOn && leftOn <= today) {
+    return "resigned";
+  }
   return "active";
 };
 
@@ -66,13 +74,16 @@ export const mapEasyVereinMember = (raw: EasyVereinMember, today: string): MapRe
 };
 
 /** Map a list, collecting members that cannot be used instead of failing the run. */
-export const mapEasyVereinMembers = (raws: EasyVereinMember[], today: string) => {
-  const members: SourceMember[] = [];
-  const skipped: SkippedMember[] = [];
+export const mapEasyVereinMembers = (raws: Array<EasyVereinMember>, today: string) => {
+  const members: Array<SourceMember> = [];
+  const skipped: Array<SkippedMember> = [];
   for (const raw of raws) {
     const result = mapEasyVereinMember(raw, today);
-    if (result.ok) members.push(result.member);
-    else skipped.push({ easyvereinId: result.easyvereinId, reason: result.reason });
+    if (result.ok) {
+      members.push(result.member);
+    } else {
+      skipped.push({ easyvereinId: result.easyvereinId, reason: result.reason });
+    }
   }
   return { members, skipped };
 };

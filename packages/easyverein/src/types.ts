@@ -21,9 +21,9 @@ export type MemberSource = {
 };
 
 export type SourceResult = {
-  members: SourceMember[];
+  members: Array<SourceMember>;
   /** Records that could not be used, e.g. without a valid email. */
-  skipped: SkippedMember[];
+  skipped: Array<SkippedMember>;
 };
 
 export type SkippedMember = { easyvereinId: string; reason: string };

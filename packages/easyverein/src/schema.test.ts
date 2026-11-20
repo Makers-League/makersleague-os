@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import { fixturesSource } from "./fixtures";
-import { deriveStatus, mapEasyVereinMember, toIsoDate, type EasyVereinMember } from "./schema";
+import { deriveStatus, mapEasyVereinMember, toIsoDate } from "./schema";
+import type { EasyVereinMember } from "./schema";
 
 const raw = (overrides: Partial<EasyVereinMember> = {}): EasyVereinMember => ({
   id: 1,

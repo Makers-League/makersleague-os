@@ -1,6 +1,7 @@
 import type { AdminClient, Json } from "@ml/db";
 
-import { EXISTING_MEMBER_COLUMNS, type ExistingMember, planSync } from "./plan";
+import { EXISTING_MEMBER_COLUMNS, planSync } from "./plan";
+import type { ExistingMember } from "./plan";
 import type { MemberSource, SkippedMember } from "./types";
 
 export type SyncStats = {
@@ -18,7 +19,7 @@ export type SyncResult = {
   runId: number;
   status: "succeeded" | "stopped";
   stats: SyncStats;
-  skipped: SkippedMember[];
+  skipped: Array<SkippedMember>;
   error?: string;
 };
 
@@ -33,9 +34,9 @@ const PAGE_SIZE = 1000; // PostgREST max_rows
 
 /** All member rows of the club, page by page (PostgREST caps each response). */
 const loadMembers = async (client: AdminClient, clubId: string) => {
-  const rows: ExistingMember[] = [];
+  const rows: Array<ExistingMember> = [];
+  // Pages load one after another: each one starts where the last one ended.
   for (let from = 0; ; from += PAGE_SIZE) {
-    // oxlint-disable-next-line no-await-in-loop -- each page starts where the last one ended
     const { data } = await client
       .from("members")
       .select(EXISTING_MEMBER_COLUMNS)
@@ -44,7 +45,9 @@ const loadMembers = async (client: AdminClient, clubId: string) => {
       .range(from, from + PAGE_SIZE - 1)
       .throwOnError();
     rows.push(...data);
-    if (data.length < PAGE_SIZE) return rows;
+    if (data.length < PAGE_SIZE) {
+      return rows;
+    }
   }
 };
 
@@ -135,7 +138,9 @@ export const runSync = async ({
           .throwOnError(),
     ]);
     const failed = writes.find((w) => w.status === "rejected");
-    if (failed) throw failed.reason;
+    if (failed) {
+      throw failed.reason;
+    }
 
     const { data: revoked } = await client
       .rpc("sync_member_logins", { club: clubId })

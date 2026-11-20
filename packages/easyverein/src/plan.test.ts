@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { type ExistingMember, planSync } from "./plan";
+import { planSync } from "./plan";
+import type { ExistingMember } from "./plan";
 import type { SourceMember } from "./types";
 
 const source = (id: number, overrides: Partial<SourceMember> = {}): SourceMember => ({

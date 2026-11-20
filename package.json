@@ -1,6 +1,7 @@
 {
   "name": "makersleague-os",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "pnpm db:start && turbo run dev",
     "build": "turbo run build",
@@ -23,7 +24,7 @@
     "env:local": "bash scripts/local-env.sh"
   },
   "devDependencies": {
-    "@oxlint/plugins": "1.94.0",
+    "@cloudflare/oxlint-config": "0.1.0",
     "oxfmt": "0.79.0",
     "oxlint": "1.94.0",
     "supabase": "3.2.0",

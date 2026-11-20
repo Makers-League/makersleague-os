@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { type LoginState, requestCode, verifyCode } from "./actions";
+import { requestCode, verifyCode } from "./actions";
+import type { LoginState } from "./actions";
 
 /** Remounting the steps resets both forms, e.g. to try another address. */
 export function LoginForm() {

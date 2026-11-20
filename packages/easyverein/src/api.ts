@@ -39,16 +39,14 @@ export const apiSource = ({
     const headers = { Authorization: `Bearer ${token}`, Accept: "application/json" };
     const params = new URLSearchParams({ query: easyVereinMemberQuery, limit: "100" });
     let url: string | null = `${baseUrl}/member?${params.toString()}`;
-    const raws: z.infer<typeof easyVereinMemberSchema>[] = [];
+    const raws: Array<z.infer<typeof easyVereinMemberSchema>> = [];
 
     while (url) {
       // Pages come one after another: each response holds the next URL.
-      // oxlint-disable-next-line no-await-in-loop
       const res = await fetchFn(url, { headers });
       if (!res.ok) {
         throw new Error(`easyVerein ${res.status} ${res.statusText} for ${new URL(url).pathname}`);
       }
-      // oxlint-disable-next-line no-await-in-loop
       const page = pageSchema.parse(await res.json());
       raws.push(...page.results);
       url = page.next;

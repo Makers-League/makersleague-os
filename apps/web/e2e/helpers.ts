@@ -1,5 +1,6 @@
 import { createAdminClient } from "@ml/db";
-import { expect, type Page } from "@playwright/test";
+import { expect } from "@playwright/test";
+import type { Page } from "@playwright/test";
 import { z } from "zod";
 
 const MAILPIT = process.env.MAILPIT_URL ?? "http://127.0.0.1:54324";
@@ -32,7 +33,9 @@ export const readLoginEmail = async (email: string) => {
 
 export const readLoginCode = async (email: string): Promise<string> => {
   const code = /\b(\d{6})\b/.exec((await readLoginEmail(email)).Text)?.[1];
-  if (!code) throw new Error(`No code in email to ${email}`);
+  if (!code) {
+    throw new Error(`No code in email to ${email}`);
+  }
   return code;
 };
 
@@ -67,7 +70,9 @@ export const login = async (page: Page, email: string) => {
  */
 export const signedIn = async (page: Page, email: string) => {
   const { data, error } = await admin().auth.admin.generateLink({ type: "magiclink", email });
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
   const { hashed_token, verification_type } = data.properties;
   await page.goto(`/auth/confirm?token_hash=${hashed_token}&type=${verification_type}`);
   await expect(page).toHaveURL("/");

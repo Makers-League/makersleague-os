@@ -19,7 +19,9 @@ test("the link in the email logs in too", async ({ page }) => {
   await requestCode(page, "jonas@example.com");
   const message = await readLoginEmail("jonas@example.com");
   const href = /href="([^"]+auth\/confirm[^"]+)"/.exec(message.HTML)?.[1]?.replaceAll("&amp;", "&");
-  if (!href) throw new Error("No login link in the email");
+  if (!href) {
+    throw new Error("No login link in the email");
+  }
   await page.goto(href);
   await expect(page.getByRole("heading", { name: "Hallo Jonas!" })).toBeVisible();
 });

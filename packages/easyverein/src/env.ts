@@ -9,7 +9,9 @@ type Env = Record<string, string | undefined>;
 
 const required = (env: Env, name: string) => {
   const value = env[name];
-  if (!value) throw new Error(`${name} is not set`);
+  if (!value) {
+    throw new Error(`${name} is not set`);
+  }
   return value;
 };
 
@@ -19,8 +21,12 @@ const optional = (env: Env, name: string) => (env[name] === "" ? undefined : env
 /** EASYVEREIN_SOURCE=fixtures or api. No default, so a deploy never syncs fixtures by accident. */
 export const sourceFromEnv = (env: Env = process.env): MemberSource => {
   const kind = required(env, "EASYVEREIN_SOURCE");
-  if (kind === "fixtures") return fixturesSource(optional(env, "EASYVEREIN_FIXTURES_PATH"));
-  if (kind === "api") return apiSource({ token: required(env, "EASYVEREIN_TOKEN") });
+  if (kind === "fixtures") {
+    return fixturesSource(optional(env, "EASYVEREIN_FIXTURES_PATH"));
+  }
+  if (kind === "api") {
+    return apiSource({ token: required(env, "EASYVEREIN_TOKEN") });
+  }
   throw new Error(`Unknown EASYVEREIN_SOURCE: ${kind}`);
 };
 

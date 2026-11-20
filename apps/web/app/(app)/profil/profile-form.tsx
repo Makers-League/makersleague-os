@@ -8,16 +8,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { Visibility } from "@/lib/validation";
 
-import { type ProfileState, saveProfile } from "./actions";
+import { saveProfile } from "./actions";
+import type { ProfileState } from "./actions";
 
 const VISIBILITY_OPTIONS = [
   ["members", "Alle Mitglieder"],
   ["board", "Nur der Vorstand"],
-] as const satisfies [Visibility, string][];
+] as const satisfies Array<[Visibility, string]>;
 
 type Props = {
   bio: string;
-  links: string[];
+  links: Array<string>;
   visibility: Visibility;
 };
 

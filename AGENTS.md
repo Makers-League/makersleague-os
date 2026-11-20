@@ -63,10 +63,12 @@ In a cloud container, start Docker first with `dockerd &`, then `pnpm db:start` 
 - TypeScript 7. Type checking runs on tsrs, the Rust port of the TypeScript 7 compiler
   (`pnpm typecheck` is `tsrs --noEmit` per package; `next build` still uses the `typescript`
   package). Lint with oxlint (type-aware through tsrs, which also reports type errors in every
-  package in one pass; plus the vendored anti-slop plugin in `tools/oxlint/anti-slop`), format
-  with oxfmt; there is no ESLint or Prettier.
-- Avoid `as`: parse unknown data with zod. Where an assertion is really needed, put a
-  `// SAFETY:` comment above it saying why it holds. Never `as unknown as T`.
+  package in one pass) using Cloudflare's preset `@cloudflare/oxlint-config` plus the project
+  additions in `oxlint.config.ts`; format with oxfmt. There is no ESLint or Prettier (the preset
+  pulls in ESLint plugin packages, which oxlint loads itself).
+- Avoid `as`: parse unknown data with zod. Narrowing assertions fail lint
+  (`typescript/no-unsafe-type-assertion`); where one is really needed, disable that rule on the
+  line with the reason why it holds. Never `as unknown as T`.
 - Disable a lint rule only on one line, with the reason:
   `// oxlint-disable-next-line <rule> -- <reason>`.
 - `next dev` writes `apps/web/AGENTS.md` (Next.js agent rules). Keep it committed.

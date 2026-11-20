@@ -1,4 +1,5 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { createClient } from "@/lib/supabase/server";
@@ -14,7 +15,9 @@ export async function GET(request: NextRequest) {
   if (tokenHash && type.success) {
     const supabase = await createClient();
     const { error } = await supabase.auth.verifyOtp({ type: type.data, token_hash: tokenHash });
-    if (!error) return NextResponse.redirect(new URL("/", request.url));
+    if (!error) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
   }
 
   return NextResponse.redirect(new URL("/login?fehler=link", request.url));

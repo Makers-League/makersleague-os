@@ -2,14 +2,18 @@ import { getCurrentMember } from "@/lib/member";
 
 export default async function DashboardPage() {
   const { member, supabase } = await getCurrentMember();
-  if (!member) return null;
+  if (!member) {
+    return null;
+  }
 
   const { data: members, error } = await supabase
     .from("active_members")
     .select("id, first_name, last_name, profiles(bio)")
     .eq("club_id", member.club_id)
     .order("first_name");
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 
   return (
     <div className="space-y-8">

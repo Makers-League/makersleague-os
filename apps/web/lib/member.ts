@@ -13,7 +13,9 @@ export const getCurrentMember = cache(async () => {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const userId = data?.claims.sub;
-  if (!userId) redirect("/login");
+  if (!userId) {
+    redirect("/login");
+  }
 
   const { data: member, error } = await supabase
     .from("active_members")
@@ -24,7 +26,9 @@ export const getCurrentMember = cache(async () => {
     .order("created_at")
     .limit(1)
     .maybeSingle();
-  if (error) throw error;
+  if (error) {
+    throw error;
+  }
 
   return { supabase, email: data.claims.email, member };
 });

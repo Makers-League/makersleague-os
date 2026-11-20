@@ -6,11 +6,5 @@
     "stylesheet": "./apps/web/app/globals.css",
     "functions": ["cn", "cva"]
   },
-  "ignorePatterns": [
-    "pnpm-lock.yaml",
-    "supabase/templates/**",
-    "**/.next/**",
-    "**/.netlify/**",
-    "tools/oxlint/anti-slop/**"
-  ]
+  "ignorePatterns": ["pnpm-lock.yaml", "supabase/templates/**", "**/.next/**", "**/.netlify/**"]
 }

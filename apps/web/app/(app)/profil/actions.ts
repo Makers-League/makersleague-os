@@ -10,14 +10,18 @@ export type ProfileState = { ok?: boolean; error?: string };
 
 export async function saveProfile(_prev: ProfileState, formData: FormData): Promise<ProfileState> {
   const { member } = await getCurrentMember();
-  if (!member) return { error: "Kein Zugang." };
+  if (!member) {
+    return { error: "Kein Zugang." };
+  }
 
   const parsed = profileSchema.safeParse({
     bio: formData.get("bio") ?? "",
     links: formData.get("links") ?? "",
     visibility: formData.get("visibility"),
   });
-  if (!parsed.success) return { error: parsed.error.issues[0]?.message };
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message };
+  }
 
   // Row level security makes sure a member can only write their own profile.
   const supabase = await createClient();
