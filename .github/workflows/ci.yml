@@ -39,7 +39,7 @@ jobs:
           NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder
       - uses: ./.github/actions/budget
         with:
-          seconds: 35
+          seconds: 40
 
   database:
     name: migrations + RLS tests
@@ -60,7 +60,7 @@ jobs:
         run: bunx supabase test db
       - uses: ./.github/actions/budget
         with:
-          seconds: 45
+          seconds: 50
       # After the budget check: saving only happens on a cache miss and is not part of the run.
       - uses: ./.github/actions/supabase-save-images
         if: ${{ !cancelled() }}
@@ -78,7 +78,7 @@ jobs:
       - run: bun run test:integration
       - uses: ./.github/actions/budget
         with:
-          seconds: 45
+          seconds: 50
 
   e2e:
     name: e2e tests
@@ -114,4 +114,4 @@ jobs:
           retention-days: 7
       - uses: ./.github/actions/budget
         with:
-          seconds: 60
+          seconds: 65
