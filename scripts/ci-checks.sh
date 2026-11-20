@@ -5,24 +5,25 @@ set -uo pipefail
 cd "$(dirname "$0")/.."
 
 dir=$(mktemp -d)
-declare -A cmds=(
-  [format]="bun fmt --check"
-  [unit]="bash scripts/unit-tests.sh"
+names=(format unit lint+typecheck+build)
+cmds=(
+  "bun run format:check"
+  "bash scripts/unit-tests.sh"
   # One turbo run, so Next's typegen runs once for lint and build. --continue reports every
   # failing task.
-  [lint+typecheck+build]="bunx turbo run lint typecheck build --continue --output-logs=errors-only"
+  "bunx turbo run lint typecheck build --continue --output-logs=errors-only"
 )
-for name in "${!cmds[@]}"; do
-  (start=$(date +%s%N); ${cmds[$name]} >"$dir/$name.log" 2>&1; echo "$? $(( ($(date +%s%N) - start) / 1000000 ))" >"$dir/$name.exit") &
+for i in "${!names[@]}"; do
+  (start=$(date +%s%N); ${cmds[$i]} >"$dir/$i.log" 2>&1; echo "$? $(( ($(date +%s%N) - start) / 1000000 ))" >"$dir/$i.exit") &
 done
 wait
 
 failed=()
-for name in format unit lint+typecheck+build; do
-  read -r code ms <"$dir/$name.exit"
-  if [ "$code" = 0 ]; then status=ok; else status=FAILED; failed+=("$name"); fi
-  echo "::group::$name: $status (${ms}ms)"
-  cat "$dir/$name.log"
+for i in "${!names[@]}"; do
+  read -r code ms <"$dir/$i.exit"
+  if [ "$code" = 0 ]; then status=ok; else status=FAILED; failed+=("${names[$i]}"); fi
+  echo "::group::${names[$i]}: $status (${ms}ms)"
+  cat "$dir/$i.log"
   echo "::endgroup::"
 done
 

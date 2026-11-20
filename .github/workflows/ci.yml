@@ -21,7 +21,8 @@ jobs:
       - uses: actions/checkout@v5
         with:
           filter: blob:none
-          fetch-depth: 0
+          # Full history only on PRs, where test selection needs the merge base.
+          fetch-depth: ${{ github.event_name == 'pull_request' && '0' || '1' }}
       - uses: ./.github/actions/setup
       # On pull requests, unit tests run only what the diff can reach (scripts/unit-tests.sh).
       # Pushes to main and the merge queue run everything.
@@ -86,11 +87,13 @@ jobs:
       # Supabase pulls its images while dependencies and the browser install.
       - uses: ./.github/actions/supabase-start
       - uses: ./.github/actions/setup
+      - id: playwright-version
+        run: echo "version=$(jq -r '.devDependencies["@playwright/test"]' apps/web/package.json)" >> "$GITHUB_OUTPUT"
       - uses: actions/cache@v4
         id: playwright
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          key: playwright-${{ runner.os }}-${{ steps.playwright-version.outputs.version }}
       # The runner image has Chromium's system libraries; only the browser build is needed.
       - name: Install Playwright browser
         if: steps.playwright.outputs.cache-hit != 'true'

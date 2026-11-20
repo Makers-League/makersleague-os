@@ -3,9 +3,6 @@ description: Bun, Node and dependencies (node_modules is cached per lockfile)
 runs:
   using: composite
   steps:
-    # Start of the job's time budget, unless supabase-start set it earlier.
-    - run: '[ -n "${JOB_START:-}" ] || echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"'
-      shell: bash
     - uses: oven-sh/setup-bun@v2
       with:
         bun-version-file: .bun-version
@@ -14,13 +11,13 @@ runs:
       with:
         node-version: 22
     - uses: actions/cache@v4
-      id: node-modules
       with:
         path: |
           node_modules
           apps/*/node_modules
           packages/*/node_modules
         key: node-modules-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-    - if: steps.node-modules.outputs.cache-hit != 'true'
-      run: bun install --frozen-lockfile
+        restore-keys: node-modules-${{ runner.os }}-
+    # A no-op in milliseconds on an exact hit; after a lockfile change it only fetches the diff.
+    - run: bun install --frozen-lockfile
       shell: bash

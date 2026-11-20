@@ -5,4 +5,5 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 bin=node_modules/.bin/supabase
 [ -x "$bin" ] || bin=supabase
-exec "$bin" start -x studio,imgproxy,vector,logflare,edge-runtime,realtime,storage-api,supavisor,postgres-meta
+# realtime and storage are off in config.toml, so they need no exclusion here.
+exec "$bin" start -x studio,imgproxy,vector,logflare,edge-runtime,supavisor,postgres-meta
