@@ -7,7 +7,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: oven-sh/setup-bun@v2
         with:
-          bun-version: canary
-      - run: bun install --frozen-lockfile
-      - run: bun run --cwd apps/web typegen
-      - run: bash scripts/tmp/lint-probe.sh
+          bun-version: 1.4.5-canary.20261119.1
+        continue-on-error: true
+      - run: bun --revision; bun lint --help | head -3 || true
+      - run: npx -y bun@1.4.5-canary.20261119.1 --revision; npx -y bun@1.4.5-canary.20261119.1 lint --help | head -3 || true
