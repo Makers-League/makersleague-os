@@ -9,7 +9,7 @@ for i in $(seq 1 40); do
   rule=$(grep -oE 'Invalid configuration for rule `[^`]+`' <<<"$out" | sed 's/.*`\(.*\)`/\1/')
   [ -z "$rule" ] && break
   echo "dropping options of $rule: $(grep -A1 "$rule" <<<"$out" | tail -1)"
-  bun -e "const c = await Bun.file('.oxlintrc.json').json(); const v = c.rules['$rule']; c.rules['$rule'] = Array.isArray(v) ? v[0] : v; await Bun.write('.oxlintrc.json', JSON.stringify(c, null, 2))"
+  RULE="$rule" bun -e 'const c = await Bun.file(".oxlintrc.json").json(); const want = process.env.RULE; const norm = (k) => k.replace(/^@typescript-eslint\//, "typescript/").replace(/^eslint\//, ""); let hit = 0; for (const [k, v] of Object.entries(c.rules)) if (norm(k) === want || k === want) { c.rules[k] = Array.isArray(v) ? v[0] : v; hit++; } for (const o of c.overrides ?? []) for (const [k, v] of Object.entries(o.rules ?? {})) if (norm(k) === want) { o.rules[k] = Array.isArray(v) ? v[0] : v; hit++; } if (!hit) { console.error("no key for " + want); process.exit(1); } await Bun.write(".oxlintrc.json", JSON.stringify(c, null, 2))' || break
 done
 echo "=== doctor"; echo "$out" | head -80
 cat > apps/web/lib/probe.ts <<'TS'
